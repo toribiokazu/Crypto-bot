@@ -288,16 +288,16 @@ function Portfolio() {
             </div>
           </div>
 
-          <div className="reveal relative mx-auto perspective-[1200px]">
+          <div className="reveal relative mx-auto" style={{ perspective: "1200px" }}>
             {/* Color splash layers behind photo */}
-            <div className="absolute -inset-10 rounded-[3rem] blur-3xl opacity-50 pointer-events-none"
-              style={{ background: "radial-gradient(circle at 30% 30%, oklch(0.75 0.20 55), transparent 60%), radial-gradient(circle at 70% 70%, oklch(0.70 0.18 30), transparent 60%)" }} />
-            <div className="absolute -inset-4 rounded-[2.5rem] blur-2xl opacity-40 pointer-events-none rotate-6"
-              style={{ background: "linear-gradient(135deg, oklch(0.78 0.17 65), oklch(0.68 0.18 35))" }} />
+            <div className="absolute -inset-12 rounded-[3rem] blur-[80px] opacity-60 pointer-events-none"
+              style={{ background: "radial-gradient(circle at 25% 25%, oklch(0.78 0.22 55), transparent 55%), radial-gradient(circle at 75% 75%, oklch(0.72 0.20 35), transparent 55%), radial-gradient(circle at 50% 50%, oklch(0.80 0.18 75), transparent 50%)" }} />
+            <div className="absolute -inset-6 rounded-[2.5rem] blur-[50px] opacity-50 pointer-events-none"
+              style={{ background: "conic-gradient(from 180deg at 50% 50%, oklch(0.78 0.17 65), oklch(0.70 0.18 30), oklch(0.75 0.16 55), oklch(0.78 0.17 65))" }} />
 
-            <div className="relative animate-float group">
+            <div className="relative animate-float group" style={{ transformStyle: "preserve-3d" }}>
               {/* 3D tilted frame */}
-              <div className="rounded-[2rem] p-1.5 transition-transform duration-500 ease-out group-hover:[transform:rotateY(-6deg)_rotateX(4deg)]"
+              <div className="rounded-[2rem] p-1.5 transition-transform duration-500 ease-out hover:[transform:rotateY(-8deg)_rotateX(5deg)_scale(1.02)]"
                 style={{ background: "var(--gradient-amber)", transformStyle: "preserve-3d" }}>
                 <img
                   src={kazuHero.url}
@@ -306,8 +306,8 @@ function Portfolio() {
                 />
               </div>
               {/* Floating badge */}
-              <div className="absolute -bottom-4 -left-4 rounded-2xl bg-card border border-border px-4 py-3 shadow-lg [transform:translateZ(30px)]"
-                style={{ transformStyle: "preserve-3d" }}>
+              <div className="absolute -bottom-4 -left-4 rounded-2xl bg-card border border-border px-4 py-3 shadow-xl transition-transform duration-500 ease-out group-hover:translate-z-[40px]"
+                style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}>
                 <div className="text-xs text-muted-foreground">Specialist</div>
                 <div className="text-sm font-semibold">AI Automation</div>
               </div>

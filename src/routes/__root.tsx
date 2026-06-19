@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Kazu Toribio" },
+      { name: "description", content: "Kazu's Digital Canvas is a personal portfolio website showcasing professional experience and services." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Kazu Toribio" },
+      { property: "og:description", content: "Kazu's Digital Canvas is a personal portfolio website showcasing professional experience and services." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Kazu Toribio" },
+      { name: "twitter:description", content: "Kazu's Digital Canvas is a personal portfolio website showcasing professional experience and services." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/464b2a75-c642-4f0d-8fb7-de6386f87620/id-preview-28f6210b--fc3ffea3-5085-4054-bb7b-bceb0edb1ee8.lovable.app-1781879581829.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/464b2a75-c642-4f0d-8fb7-de6386f87620/id-preview-28f6210b--fc3ffea3-5085-4054-bb7b-bceb0edb1ee8.lovable.app-1781879581829.png" },
     ],
     links: [
       {

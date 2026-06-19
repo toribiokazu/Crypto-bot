@@ -5,7 +5,7 @@ import {
   Globe, PenTool, ArrowRight, Quote, Award, Briefcase, ExternalLink,
   Github, Linkedin, Sun, Moon, ChevronLeft, ChevronRight,
 } from "lucide-react";
-import kazuPhoto from "@/assets/kazu-profile.png.asset.json";
+import kazuHero from "@/assets/kazu-hero.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -276,8 +276,11 @@ function Portfolio() {
               Hi, I'm Kazu — an AI Automation Innovation Specialist with 5+ years of experience in CRM management, campaign execution, and process automation.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#works" onMouseDown={addRipple} className="ripple inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition" style={{ boxShadow: "var(--shadow-glow)" }}>
-                View my work <ArrowRight className="h-4 w-4" />
+              <a href="https://calendly.com/toribiokazu/discovery-call" target="_blank" rel="noreferrer" onMouseDown={addRipple} className="ripple inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition" style={{ boxShadow: "var(--shadow-glow)" }}>
+                Book a discovery call <ArrowRight className="h-4 w-4" />
+              </a>
+              <a href="#works" onMouseDown={addRipple} className="ripple inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 font-semibold hover:border-primary/50 transition">
+                View my work
               </a>
               <a href="#contact" onMouseDown={addRipple} className="ripple inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 font-semibold hover:border-primary/50 transition">
                 Get in touch
@@ -285,17 +288,26 @@ function Portfolio() {
             </div>
           </div>
 
-          <div className="reveal relative mx-auto">
-            <div className="absolute -inset-6 rounded-[2rem] opacity-60 blur-2xl" style={{ background: "var(--gradient-amber)" }} />
-            <div className="relative animate-float">
-              <div className="rounded-[2rem] p-1.5" style={{ background: "var(--gradient-amber)" }}>
+          <div className="reveal relative mx-auto" style={{ perspective: "1200px" }}>
+            {/* Color splash layers behind photo */}
+            <div className="absolute -inset-12 rounded-[3rem] blur-[80px] opacity-60 pointer-events-none"
+              style={{ background: "radial-gradient(circle at 25% 25%, oklch(0.78 0.22 55), transparent 55%), radial-gradient(circle at 75% 75%, oklch(0.72 0.20 35), transparent 55%), radial-gradient(circle at 50% 50%, oklch(0.80 0.18 75), transparent 50%)" }} />
+            <div className="absolute -inset-6 rounded-[2.5rem] blur-[50px] opacity-50 pointer-events-none"
+              style={{ background: "conic-gradient(from 180deg at 50% 50%, oklch(0.78 0.17 65), oklch(0.70 0.18 30), oklch(0.75 0.16 55), oklch(0.78 0.17 65))" }} />
+
+            <div className="relative animate-float group" style={{ transformStyle: "preserve-3d" }}>
+              {/* 3D tilted frame */}
+              <div className="rounded-[2rem] p-1.5 transition-transform duration-500 ease-out hover:[transform:rotateY(-8deg)_rotateX(5deg)_scale(1.02)]"
+                style={{ background: "var(--gradient-amber)", transformStyle: "preserve-3d" }}>
                 <img
-                  src={kazuPhoto.url}
+                  src={kazuHero.url}
                   alt="Kazu Toribio"
                   className="block w-[280px] sm:w-[340px] rounded-[1.6rem] object-cover"
                 />
               </div>
-              <div className="absolute -bottom-4 -left-4 rounded-2xl bg-card border border-border px-4 py-3 shadow-lg">
+              {/* Floating badge */}
+              <div className="absolute -bottom-4 -left-4 rounded-2xl bg-card border border-border px-4 py-3 shadow-xl transition-transform duration-500 ease-out group-hover:translate-z-[40px]"
+                style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}>
                 <div className="text-xs text-muted-foreground">Specialist</div>
                 <div className="text-sm font-semibold">AI Automation</div>
               </div>
@@ -423,6 +435,9 @@ function Portfolio() {
               <ContactRow icon={Phone} label="Phone" value="+63 956 897 1143" href="tel:+639568971143" />
               <ContactRow icon={MapPin} label="Location" value="Naic, Cavite, Philippines" />
             </div>
+            <a href="https://calendly.com/toribiokazu/discovery-call" target="_blank" rel="noreferrer" onMouseDown={addRipple} className="ripple mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition" style={{ boxShadow: "var(--shadow-glow)" }}>
+              Book a discovery call <ArrowRight className="h-4 w-4" />
+            </a>
           </div>
 
           <form className="reveal card-elevated rounded-2xl p-6 space-y-4" onSubmit={(e) => { e.preventDefault(); window.location.href = `mailto:toribiokazu@gmail.com`; }}>

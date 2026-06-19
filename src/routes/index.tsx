@@ -474,8 +474,8 @@ function Portfolio() {
           <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Kazu Toribio. Crafted with care.</p>
           <div className="flex items-center gap-3 text-muted-foreground">
             <a href="mailto:toribiokazu@gmail.com" className="hover:text-primary"><Mail className="h-4 w-4" /></a>
-            <a href="#" className="hover:text-primary"><Linkedin className="h-4 w-4" /></a>
-            <a href="#" className="hover:text-primary"><Github className="h-4 w-4" /></a>
+            <a href="https://www.linkedin.com/in/kazu-toribio-b06654203/" className="hover:text-primary"><Linkedin className="h-4 w-4" /></a>
+            <a href="https://github.com/toribiokazu" className="hover:text-primary"><Github className="h-4 w-4" /></a>
           </div>
         </div>
       </footer>

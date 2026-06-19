@@ -435,6 +435,9 @@ function Portfolio() {
               <ContactRow icon={Phone} label="Phone" value="+63 956 897 1143" href="tel:+639568971143" />
               <ContactRow icon={MapPin} label="Location" value="Naic, Cavite, Philippines" />
             </div>
+            <a href="https://calendly.com/toribiokazu/discovery-call" target="_blank" rel="noreferrer" onMouseDown={addRipple} className="ripple mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition" style={{ boxShadow: "var(--shadow-glow)" }}>
+              Book a discovery call <ArrowRight className="h-4 w-4" />
+            </a>
           </div>
 
           <form className="reveal card-elevated rounded-2xl p-6 space-y-4" onSubmit={(e) => { e.preventDefault(); window.location.href = `mailto:toribiokazu@gmail.com`; }}>

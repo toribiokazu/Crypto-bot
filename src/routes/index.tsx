@@ -11,9 +11,22 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Kazu Toribio — AI Automation Innovation Specialist" },
-      { name: "description", content: "Portfolio of Kazu Toribio: AI Automation Innovation Specialist with 5+ years building workflows, CRM systems, and marketing automation." },
-      { property: "og:title", content: "Kazu Toribio — AI Automation Innovation Specialist" },
-      { property: "og:description", content: "AI workflows, CRM, and marketing systems that save time and drive results." },
+      {
+        name: "description",
+        content: "Portfolio of Kazu Toribio: AI Automation Innovation Specialist with 5+ years building workflows, CRM systems, and marketing automation."
+      },
+      {
+        name: "keywords",
+        content: "AI Automation, n8n, Zapier, Make, GoHighLevel, CRM Automation, Marketing Automation, WordPress, Airtable, OpenAI"
+      },
+      {
+        property: "og:title",
+        content: "Kazu Toribio — AI Automation Innovation Specialist"
+      },
+      {
+        property: "og:description",
+        content: "AI workflows, CRM, and marketing systems that save time and drive results."
+      },
     ],
   }),
   component: Portfolio,
@@ -273,7 +286,7 @@ function Portfolio() {
               I build <span className="text-gradient">AI workflows</span> and marketing systems that actually save you time.
             </h1>
             <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-              Hi, I'm Kazu — an AI Automation Innovation Specialist with 5+ years of experience in CRM management, campaign execution, and process automation.
+              I help businesses automate operations, streamline CRM workflows, and scale marketing systems using AI, n8n, Make, Zapier, and GoHighLevel.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="https://calendly.com/toribiokazu/discovery-call" target="_blank" rel="noreferrer" onMouseDown={addRipple} className="ripple inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition" style={{ boxShadow: "var(--shadow-glow)" }}>

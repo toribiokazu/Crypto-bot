@@ -9,6 +9,12 @@ import {
 
 export const Route = createFileRoute("/")({
   head: () => ({
+    links: [
+    {
+      rel: "icon",
+      href: "/favicon.png",
+    },
+  ],
     meta: [
       { title: "Kazu Toribio - AI Automation Innovation Specialist" },
       {

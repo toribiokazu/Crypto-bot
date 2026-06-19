@@ -1,16 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   Mail, Phone, MapPin, Sparkles, Workflow, Megaphone, Database,
-  Globe, PenTool, ArrowRight, Quote, Award, Briefcase, ExternalLink, Github, Linkedin
+  Globe, PenTool, ArrowRight, Quote, Award, Briefcase, ExternalLink,
+  Github, Linkedin, Sun, Moon,
 } from "lucide-react";
+import kazuPhoto from "@/assets/kazu-profile.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kazu Toribio — AI Automation & Marketing Specialist" },
-      { name: "description", content: "Portfolio of Kazu Toribio: AI automation innovation specialist, sales & marketing assistant, and technical virtual assistant with 5+ years of experience." },
-      { property: "og:title", content: "Kazu Toribio — AI Automation & Marketing Specialist" },
-      { property: "og:description", content: "AI workflows, CRM, marketing campaigns, and digital systems that save time and drive results." },
+      { title: "Kazu Toribio — AI Automation Innovation Specialist" },
+      { name: "description", content: "Portfolio of Kazu Toribio: AI Automation Innovation Specialist with 5+ years building workflows, CRM systems, and marketing automation." },
+      { property: "og:title", content: "Kazu Toribio — AI Automation Innovation Specialist" },
+      { property: "og:description", content: "AI workflows, CRM, and marketing systems that save time and drive results." },
     ],
   }),
   component: Portfolio,
@@ -27,8 +30,8 @@ const services = [
 
 const experience = [
   {
-    company: "C.M. Products",
-    role: "Sales & Marketing Assistant · AI Automation Innovation Specialist",
+    company: "AI Automation Innovation Specialist",
+    role: "Sales & Marketing Assistant · AI Automation",
     period: "2025 — Present",
     points: [
       "Support sales & marketing operations through campaigns, lead tracking, and customer engagement.",
@@ -38,8 +41,8 @@ const experience = [
     ],
   },
   {
-    company: "Previous Company",
-    role: "Technical Virtual Assistant · Marketing Assistant",
+    company: "Technical Virtual Assistant",
+    role: "Marketing Assistant · Technical VA",
     period: "2021 — 2025",
     points: [
       "Managed social media, content, Facebook ads, and customer inquiries.",
@@ -60,11 +63,11 @@ const works = [
 ];
 
 const testimonials = [
-  { quote: "Kazu is spectacular in every way. He is polite and attentive, eager to jump on tasks, and an asset in all aspects of our team." },
-  { quote: "Working with Kazu has significantly improved our workflow efficiency. His expertise in automation, lead management, and digital marketing has saved us countless hours." },
-  { quote: "Reliable, resourceful, and highly skilled in managing websites, CRM systems, and marketing campaigns. He always exceeds expectations." },
-  { quote: "Kazu helped transform our manual workflows into automated systems, improving accuracy and saving valuable time across our organization." },
-  { quote: "Professional, detail-oriented, and results-driven. Kazu consistently delivers quality work with excellent communication." },
+  { name: "Marco", quote: "Kazu is spectacular in every way. He is polite and attentive, eager to jump on tasks, and an asset in all aspects of our team." },
+  { name: "Jenna", quote: "Working with Kazu has significantly improved our workflow efficiency. His expertise in automation, lead management, and digital marketing has saved us countless hours." },
+  { name: "Daniel", quote: "Reliable, resourceful, and highly skilled in managing websites, CRM systems, and marketing campaigns. He always exceeds expectations." },
+  { name: "Priya", quote: "Kazu helped transform our manual workflows into automated systems, improving accuracy and saving valuable time across our organization." },
+  { name: "Liam", quote: "Professional, detail-oriented, and results-driven. Kazu consistently delivers quality work with excellent communication." },
 ];
 
 const skills = [
@@ -76,7 +79,7 @@ const skills = [
 function Logo() {
   return (
     <a href="#top" className="group inline-flex items-center gap-2">
-      <span className="grid h-9 w-9 place-items-center rounded-lg text-primary-foreground font-display text-lg font-bold" style={{ background: "var(--gradient-amber)" }}>
+      <span className="grid h-9 w-9 place-items-center rounded-lg text-primary-foreground font-display text-lg font-bold transition-transform group-hover:rotate-6" style={{ background: "var(--gradient-amber)" }}>
         K
       </span>
       <span className="font-display text-lg font-semibold tracking-tight">
@@ -86,7 +89,70 @@ function Logo() {
   );
 }
 
+function useTheme() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  useEffect(() => {
+    const stored = (typeof localStorage !== "undefined" && localStorage.getItem("theme")) as "light" | "dark" | null;
+    const initial = stored ?? "light";
+    setTheme(initial);
+    document.documentElement.classList.toggle("dark", initial === "dark");
+  }, []);
+  const toggle = () => {
+    const next = theme === "light" ? "dark" : "light";
+    setTheme(next);
+    document.documentElement.classList.toggle("dark", next === "dark");
+    localStorage.setItem("theme", next);
+  };
+  return { theme, toggle };
+}
+
+function ThemeToggle() {
+  const { theme, toggle } = useTheme();
+  return (
+    <button
+      onClick={toggle}
+      aria-label="Toggle theme"
+      className="ripple grid h-9 w-9 place-items-center rounded-full border border-border bg-card hover:border-primary/50 transition"
+      onMouseDown={addRipple}
+    >
+      {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+    </button>
+  );
+}
+
+function addRipple(e: React.MouseEvent<HTMLElement>) {
+  const el = e.currentTarget;
+  const rect = el.getBoundingClientRect();
+  el.style.setProperty("--rx", `${e.clientX - rect.left}px`);
+  el.style.setProperty("--ry", `${e.clientY - rect.top}px`);
+  el.classList.remove("is-rippling");
+  // force reflow
+  void el.offsetWidth;
+  el.classList.add("is-rippling");
+  setTimeout(() => el.classList.remove("is-rippling"), 600);
+}
+
+function useReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
 function Portfolio() {
+  useReveal();
   return (
     <div id="top" className="min-h-screen bg-background text-foreground">
       <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -104,50 +170,69 @@ function Portfolio() {
             <a href="#testimonials" className="hover:text-foreground transition-colors">Testimonials</a>
             <a href="#contact" className="hover:text-foreground transition-colors">Contact</a>
           </nav>
-          <a href="#contact" className="hidden md:inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition">
-            Hire me <ArrowRight className="h-4 w-4" />
-          </a>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <a href="#contact" onMouseDown={addRipple} className="ripple hidden md:inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition">
+              Hire me <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
         </div>
       </header>
 
       {/* HERO */}
       <section className="relative bg-hero-glow overflow-hidden">
-        <div className="mx-auto max-w-6xl px-6 pt-24 pb-32">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-4 py-1.5 text-xs text-muted-foreground">
-            <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-            Available for new projects
-          </div>
-          <h1 className="mt-6 font-display text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.05]">
-            I build <span className="text-gradient">AI workflows</span> and<br />
-            marketing systems that<br />
-            actually save you time.
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Hi, I'm Kazu — an AI Automation Innovation Specialist and Sales & Marketing Assistant
-            with 5+ years of experience in CRM management, campaign execution, and process automation.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#works" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition" style={{ boxShadow: "var(--shadow-glow)" }}>
-              View my work <ArrowRight className="h-4 w-4" />
-            </a>
-            <a href="#contact" className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 font-semibold hover:border-primary/50 transition">
-              Get in touch
-            </a>
+        <div className="mx-auto max-w-6xl px-6 pt-20 pb-28 grid gap-12 lg:grid-cols-[1.4fr_1fr] items-center">
+          <div className="reveal">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-4 py-1.5 text-xs text-muted-foreground">
+              <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+              Available for new projects
+            </div>
+            <h1 className="mt-6 font-display text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.05]">
+              I build <span className="text-gradient">AI workflows</span> and marketing systems that actually save you time.
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+              Hi, I'm Kazu — an AI Automation Innovation Specialist with 5+ years of experience in CRM management, campaign execution, and process automation.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="#works" onMouseDown={addRipple} className="ripple inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition" style={{ boxShadow: "var(--shadow-glow)" }}>
+                View my work <ArrowRight className="h-4 w-4" />
+              </a>
+              <a href="#contact" onMouseDown={addRipple} className="ripple inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 font-semibold hover:border-primary/50 transition">
+                Get in touch
+              </a>
+            </div>
           </div>
 
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { k: "5+", v: "Years experience" },
-              { k: "50+", v: "Workflows automated" },
-              { k: "10k+", v: "Leads managed" },
-              { k: "100%", v: "Client satisfaction" },
-            ].map((s) => (
-              <div key={s.v} className="card-elevated rounded-2xl p-5">
-                <div className="font-display text-3xl font-bold text-gradient">{s.k}</div>
-                <div className="mt-1 text-sm text-muted-foreground">{s.v}</div>
+          <div className="reveal relative mx-auto">
+            <div className="absolute -inset-6 rounded-[2rem] opacity-60 blur-2xl" style={{ background: "var(--gradient-amber)" }} />
+            <div className="relative animate-float">
+              <div className="rounded-[2rem] p-1.5" style={{ background: "var(--gradient-amber)" }}>
+                <img
+                  src={kazuPhoto.url}
+                  alt="Kazu Toribio"
+                  className="block w-[280px] sm:w-[340px] rounded-[1.6rem] object-cover"
+                />
               </div>
-            ))}
+              <div className="absolute -bottom-4 -left-4 rounded-2xl bg-card border border-border px-4 py-3 shadow-lg">
+                <div className="text-xs text-muted-foreground">Specialist</div>
+                <div className="text-sm font-semibold">AI Automation</div>
+              </div>
+            </div>
           </div>
+        </div>
+
+        <div className="mx-auto max-w-6xl px-6 pb-20 grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { k: "5+", v: "Years experience" },
+            { k: "50+", v: "Workflows automated" },
+            { k: "10k+", v: "Leads managed" },
+            { k: "100%", v: "Client satisfaction" },
+          ].map((s) => (
+            <div key={s.v} className="reveal card-elevated rounded-2xl p-5">
+              <div className="font-display text-3xl font-bold text-gradient">{s.k}</div>
+              <div className="mt-1 text-sm text-muted-foreground">{s.v}</div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -156,7 +241,7 @@ function Portfolio() {
         <SectionHeader eyebrow="Services" title="What I can do for you" />
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s) => (
-            <div key={s.title} className="card-elevated rounded-2xl p-6">
+            <div key={s.title} onMouseDown={addRipple} className="reveal ripple card-elevated rounded-2xl p-6 cursor-pointer">
               <div className="grid h-12 w-12 place-items-center rounded-xl bg-primary/10 text-primary">
                 <s.icon className="h-6 w-6" />
               </div>
@@ -168,12 +253,12 @@ function Portfolio() {
       </section>
 
       {/* EXPERIENCE */}
-      <section id="experience" className="border-y border-border bg-card/30">
+      <section id="experience" className="border-y border-border bg-card/40">
         <div className="mx-auto max-w-6xl px-6 py-24">
           <SectionHeader eyebrow="Work Experience" title="Where I've made an impact" />
           <div className="mt-12 space-y-6">
             {experience.map((e) => (
-              <div key={e.company} className="card-elevated rounded-2xl p-8 grid gap-6 md:grid-cols-[1fr_2fr]">
+              <div key={e.company} className="reveal card-elevated rounded-2xl p-8 grid gap-6 md:grid-cols-[1fr_2fr]">
                 <div>
                   <div className="inline-flex items-center gap-2 text-xs text-primary font-medium">
                     <Briefcase className="h-4 w-4" /> {e.period}
@@ -193,7 +278,7 @@ function Portfolio() {
             ))}
           </div>
 
-          <div className="mt-10 flex flex-wrap gap-2">
+          <div className="reveal mt-10 flex flex-wrap gap-2">
             {skills.map((s) => (
               <span key={s} className="rounded-full border border-border bg-background px-3 py-1.5 text-xs text-muted-foreground hover:border-primary/50 hover:text-foreground transition">
                 {s}
@@ -208,9 +293,9 @@ function Portfolio() {
         <SectionHeader eyebrow="Previous Works" title="Selected projects & systems" />
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {works.map((w, i) => (
-            <article key={w.title} className="card-elevated group rounded-2xl overflow-hidden">
-              <div className="relative aspect-[4/3] overflow-hidden" style={{ background: `linear-gradient(135deg, oklch(0.${30+i*3} 0.${10+i} ${40+i*40}), oklch(0.25 0.05 260))` }}>
-                <div className="absolute inset-0 grid place-items-center font-display text-6xl font-bold text-foreground/10">
+            <article key={w.title} onMouseDown={addRipple} className="reveal ripple card-elevated group rounded-2xl overflow-hidden cursor-pointer">
+              <div className="relative aspect-[4/3] overflow-hidden" style={{ background: `linear-gradient(135deg, oklch(0.${75+i} 0.${12+i} ${40+i*40}), oklch(0.85 0.08 ${260-i*30}))` }}>
+                <div className="absolute inset-0 grid place-items-center font-display text-6xl font-bold text-foreground/15">
                   {String(i + 1).padStart(2, "0")}
                 </div>
               </div>
@@ -223,31 +308,28 @@ function Portfolio() {
           ))}
         </div>
         <div className="mt-10 text-center">
-          <a href="https://drive.google.com/file/d/1hD7lsTcMsGr2B9_wW-Rg7BTqrG_upjgg/view" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 font-semibold hover:border-primary/50 transition">
+          <a href="https://drive.google.com/file/d/1hD7lsTcMsGr2B9_wW-Rg7BTqrG_upjgg/view" target="_blank" rel="noreferrer" onMouseDown={addRipple} className="ripple inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 font-semibold hover:border-primary/50 transition">
             View full portfolio <ExternalLink className="h-4 w-4" />
           </a>
         </div>
       </section>
 
       {/* TESTIMONIALS */}
-      <section id="testimonials" className="border-y border-border bg-card/30">
+      <section id="testimonials" className="border-y border-border bg-card/40">
         <div className="mx-auto max-w-6xl px-6 py-24">
           <SectionHeader eyebrow="Testimonials" title="What clients say" />
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {testimonials.map((t, i) => (
-              <figure key={i} className="card-elevated rounded-2xl p-6">
+              <figure key={i} className="reveal card-elevated rounded-2xl p-6">
                 <Quote className="h-8 w-8 text-primary/60" />
                 <blockquote className="mt-4 text-sm leading-relaxed text-foreground/90">
                   "{t.quote}"
                 </blockquote>
                 <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-4">
                   <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary font-semibold">
-                    C{i + 1}
+                    {t.name[0]}
                   </div>
-                  <div>
-                    <div className="text-sm font-semibold">Verified Client</div>
-                    <div className="text-xs text-muted-foreground">Marketing & Operations</div>
-                  </div>
+                  <div className="text-sm font-semibold">{t.name}</div>
                 </figcaption>
               </figure>
             ))}
@@ -264,7 +346,7 @@ function Portfolio() {
       <section id="contact" className="mx-auto max-w-6xl px-6 py-24">
         <SectionHeader eyebrow="Contact" title="Let's build something great" />
         <div className="mt-12 grid gap-10 lg:grid-cols-2">
-          <div>
+          <div className="reveal">
             <p className="text-lg text-muted-foreground leading-relaxed">
               Have a workflow to automate, a campaign to launch, or a CRM to clean up?
               Send me a message — I usually reply within a day.
@@ -276,14 +358,14 @@ function Portfolio() {
             </div>
           </div>
 
-          <form className="card-elevated rounded-2xl p-6 space-y-4" onSubmit={(e) => { e.preventDefault(); window.location.href = `mailto:toribiokazu@gmail.com`; }}>
+          <form className="reveal card-elevated rounded-2xl p-6 space-y-4" onSubmit={(e) => { e.preventDefault(); window.location.href = `mailto:toribiokazu@gmail.com`; }}>
             <Field label="Name" type="text" placeholder="Your name" />
             <Field label="Email" type="email" placeholder="you@email.com" />
             <div>
               <label className="text-xs font-medium text-muted-foreground">Message</label>
               <textarea rows={5} className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-sm outline-none focus:border-primary transition" placeholder="Tell me about your project..." />
             </div>
-            <button type="submit" className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition">
+            <button type="submit" onMouseDown={addRipple} className="ripple w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition">
               Send message <ArrowRight className="h-4 w-4" />
             </button>
           </form>
@@ -308,7 +390,7 @@ function Portfolio() {
 
 function SectionHeader({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
-    <div className="max-w-2xl">
+    <div className="reveal max-w-2xl">
       <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{eyebrow}</div>
       <h2 className="mt-3 font-display text-4xl sm:text-5xl font-bold">{title}</h2>
     </div>

@@ -10,7 +10,7 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kazu Toribio — AI Automation Innovation Specialist" },
+      { title: "Kazu Toribio - AI Automation Innovation Specialist" },
       {
         name: "description",
         content: "Portfolio of Kazu Toribio: AI Automation Innovation Specialist with 5+ years building workflows, CRM systems, and marketing automation."
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:title",
-        content: "Kazu Toribio — AI Automation Innovation Specialist"
+        content: "Kazu Toribio - AI Automation Innovation Specialist"
       },
       {
         property: "og:description",
@@ -45,7 +45,7 @@ const experience = [
   {
     company: "AI Automation Innovation Specialist",
     role: "Sales & Marketing Assistant · AI Automation",
-    period: "2025 — Present",
+    period: "2025 - Present",
     points: [
       "Support sales & marketing operations through campaigns, lead tracking, and customer engagement.",
       "Maintain WordPress sites, landing pages, and product content.",
@@ -56,7 +56,7 @@ const experience = [
   {
     company: "Technical Virtual Assistant",
     role: "Marketing Assistant · Technical VA",
-    period: "2021 — 2025",
+    period: "2021 - 2025",
     points: [
       "Managed social media, content, Facebook ads, and customer inquiries.",
       "Handled email campaigns, CRM databases, and lead management.",
@@ -441,7 +441,7 @@ function Portfolio() {
           <div className="reveal">
             <p className="text-lg text-muted-foreground leading-relaxed">
               Have a workflow to automate, a campaign to launch, or a CRM to clean up?
-              Send me a message — I usually reply within a day.
+              Send me a message. I usually reply within a day.
             </p>
             <div className="mt-8 space-y-4">
               <ContactRow icon={Mail} label="Email" value="toribiokazu@gmail.com" href="mailto:toribiokazu@gmail.com" />

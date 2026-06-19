@@ -302,7 +302,7 @@ function Portfolio() {
                 <img
                   src={kazuHero}
                   alt="Kazu Toribio"
-                  className="block w-[280px] sm:w-[340px] rounded-[1.6rem] object-cover"
+                  style={{ width: "300px", height: "auto" }}
                 />
               </div>
               {/* Floating badge */}

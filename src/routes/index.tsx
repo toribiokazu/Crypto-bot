@@ -302,7 +302,6 @@ function Portfolio() {
                 <img
                   src="/kazu-hero.png"
                   alt="Kazu Toribio"
-                  style={{ width: "300px", height: "auto" }}
                 />
               </div>
               {/* Floating badge */}

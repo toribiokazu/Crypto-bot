@@ -318,22 +318,7 @@ function Portfolio() {
       <section id="testimonials" className="border-y border-border bg-card/40">
         <div className="mx-auto max-w-6xl px-6 py-24">
           <SectionHeader eyebrow="Testimonials" title="What clients say" />
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {testimonials.map((t, i) => (
-              <figure key={i} className="reveal card-elevated rounded-2xl p-6">
-                <Quote className="h-8 w-8 text-primary/60" />
-                <blockquote className="mt-4 text-sm leading-relaxed text-foreground/90">
-                  "{t.quote}"
-                </blockquote>
-                <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-4">
-                  <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary font-semibold">
-                    {t.name[0]}
-                  </div>
-                  <div className="text-sm font-semibold">{t.name}</div>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
+          <TestimonialCarousel />
 
           <div className="mt-12 flex items-center justify-center gap-2 text-xs text-muted-foreground">
             <Award className="h-4 w-4 text-primary" />

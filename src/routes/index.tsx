@@ -300,7 +300,7 @@ function Portfolio() {
               <div className="rounded-[2rem] p-1.5 transition-transform duration-500 ease-out hover:[transform:rotateY(-8deg)_rotateX(5deg)_scale(1.02)]"
                 style={{ background: "var(--gradient-amber)", transformStyle: "preserve-3d" }}>
                 <img
-                  src={kazuHero.url}
+                  src={kazuHero}
                   alt="Kazu Toribio"
                   className="block w-[280px] sm:w-[340px] rounded-[1.6rem] object-cover"
                 />

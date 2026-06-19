@@ -5,7 +5,7 @@ import {
   Globe, PenTool, ArrowRight, Quote, Award, Briefcase, ExternalLink,
   Github, Linkedin, Sun, Moon, ChevronLeft, ChevronRight,
 } from "lucide-react";
-import kazuPhoto from "@/assets/kazu-profile.png.asset.json";
+import kazuHero from "@/assets/kazu-hero.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({

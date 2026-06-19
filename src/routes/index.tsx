@@ -5,7 +5,7 @@ import {
   Globe, PenTool, ArrowRight, Quote, Award, Briefcase, ExternalLink,
   Github, Linkedin, Sun, Moon, ChevronLeft, ChevronRight,
 } from "lucide-react";
-import kazuHero from "@/assets/kazu-hero.png";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -300,7 +300,7 @@ function Portfolio() {
               <div className="rounded-[2rem] p-1.5 transition-transform duration-500 ease-out hover:[transform:rotateY(-8deg)_rotateX(5deg)_scale(1.02)]"
                 style={{ background: "var(--gradient-amber)", transformStyle: "preserve-3d" }}>
                 <img
-                  src={kazuHero}
+                  src="/kazu-hero.png"
                   alt="Kazu Toribio"
                   style={{ width: "300px", height: "auto" }}
                 />

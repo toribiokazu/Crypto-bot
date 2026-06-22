@@ -1,6 +1,7 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { MessageCircle, Send, X, Calendar } from "lucide-react";
 import Avatar3D from "@/components/Avatar3D";
 
@@ -52,10 +53,20 @@ export default function PortfolioChat() {
     setInput("");
   };
 
-  const renderText = (m: UIMessage) =>
-    m.parts.map((p, i) =>
-      p.type === "text" ? <span key={i} className="whitespace-pre-wrap">{p.text}</span> : null
+  const getText = (m: UIMessage) =>
+    m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
+
+  const renderMessage = (m: UIMessage) => {
+    const text = getText(m);
+    if (m.role === "user") {
+      return <span className="whitespace-pre-wrap">{text}</span>;
+    }
+    return (
+      <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-headings:my-1 prose-a:text-primary">
+        <ReactMarkdown>{text}</ReactMarkdown>
+      </div>
     );
+  };
 
   return (
     <>
@@ -148,7 +159,7 @@ export default function PortfolioChat() {
                       : "bg-muted text-foreground rounded-tl-sm"
                   }`}
                 >
-                  {renderText(m)}
+                  {renderMessage(m)}
                 </div>
               </div>
             ))}

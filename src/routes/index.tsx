@@ -2,9 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
 import {
   Mail, Phone, MapPin, Sparkles, Workflow, Megaphone, Database,
-  Globe, PenTool, ArrowRight, Quote, Award, Briefcase, ExternalLink,
+  Globe, PenTool, ArrowRight, Quote, Award, Briefcase,
   Github, Linkedin, Sun, Moon, ChevronLeft, ChevronRight,
 } from "lucide-react";
+import PortfolioChat from "@/components/PortfolioChat";
 
 
 export const Route = createFileRoute("/")({
@@ -420,11 +421,6 @@ function Portfolio() {
             </article>
           ))}
         </div>
-        <div className="mt-10 text-center">
-          <a href="https://drive.google.com/file/d/1hD7lsTcMsGr2B9_wW-Rg7BTqrG_upjgg/view" target="_blank" rel="noreferrer" onMouseDown={addRipple} className="ripple inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 font-semibold hover:border-primary/50 transition">
-            View full portfolio <ExternalLink className="h-4 w-4" />
-          </a>
-        </div>
       </section>
 
       {/* TESTIMONIALS */}
@@ -485,6 +481,8 @@ function Portfolio() {
           </div>
         </div>
       </footer>
+
+      <PortfolioChat />
     </div>
   );
 }

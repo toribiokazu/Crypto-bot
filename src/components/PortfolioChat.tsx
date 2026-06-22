@@ -60,7 +60,7 @@ export default function PortfolioChat() {
           aria-label="Open chat"
           className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-full bg-card border border-border pl-2 pr-5 py-2 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-0.5"
         >
-          <FollowingAvatar size={40} />
+          <Avatar3D size={40} />
           <span className="text-sm font-semibold">Chat with Kazu</span>
           <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-primary animate-pulse" />
         </button>
@@ -78,7 +78,7 @@ export default function PortfolioChat() {
         >
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-border bg-card/80 backdrop-blur px-4 py-3">
-            <FollowingAvatar size={44} />
+            <Avatar3D size={44} />
             <div className="flex-1 min-w-0">
               <div className="text-sm font-semibold">Kazu's Assistant</div>
               <div className="text-xs text-muted-foreground flex items-center gap-1.5">

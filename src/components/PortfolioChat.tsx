@@ -2,7 +2,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
 import { MessageCircle, Send, X, Calendar } from "lucide-react";
-import kazuAvatar from "@/assets/kazu-profile.png.asset.json";
+import Avatar3D from "@/components/Avatar3D";
 
 const SUGGESTIONS = [
   "Give me a summary of Kazu",
@@ -10,44 +10,6 @@ const SUGGESTIONS = [
   "Show me his recent projects",
   "Book a discovery call",
 ];
-
-function FollowingAvatar({ size = 48 }: { size?: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      const el = ref.current;
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const dist = Math.hypot(dx, dy) || 1;
-      const max = 6;
-      const m = Math.min(dist / 80, 1) * max;
-      setOffset({ x: (dx / dist) * m, y: (dy / dist) * m });
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      className="relative shrink-0 overflow-hidden rounded-full border-2 border-primary/40 shadow-lg"
-      style={{ width: size, height: size, background: "var(--gradient-amber)" }}
-    >
-      <img
-        src={kazuAvatar.url}
-        alt="Kazu"
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-150 ease-out"
-        style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(1.1)` }}
-      />
-    </div>
-  );
-}
 
 export default function PortfolioChat() {
   const [open, setOpen] = useState(false);

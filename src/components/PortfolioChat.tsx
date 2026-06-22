@@ -1,6 +1,7 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { MessageCircle, Send, X, Calendar } from "lucide-react";
 import Avatar3D from "@/components/Avatar3D";
 

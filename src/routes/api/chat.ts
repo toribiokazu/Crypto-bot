@@ -83,7 +83,6 @@ export const Route = createFileRoute("/api/chat")({
           return new Response("Chat endpoint failed. Check server logs.", { status: 500 });
         }
       },
-      },
     },
   },
 });

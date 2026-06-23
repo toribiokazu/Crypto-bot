@@ -62,7 +62,7 @@ export default function PortfolioChat() {
       return <span className="whitespace-pre-wrap">{text}</span>;
     }
     return (
-      <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-headings:my-1 prose-a:text-primary">
+      <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-3 prose-ul:my-3 prose-ol:my-3 prose-li:my-1 prose-headings:my-2 prose-a:text-primary leading-relaxed">
         <ReactMarkdown>{text}</ReactMarkdown>
       </div>
     );

@@ -56,11 +56,40 @@ export default function PortfolioChat() {
   const getText = (m: UIMessage) =>
     m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
 
-  // Ensure paragraphs are visually separated even when the model emits only
-  // single newlines between them. Markdown needs a blank line between blocks.
+  // Ensure paragraphs are visually separated even when the model emits plain
+  // text without markdown block spacing.
   const normalizeForMarkdown = (text: string) => {
-    const lines = text.replace(/\r\n/g, "\n").split("\n");
+    const normalized = text.replace(/\r\n/g, "\n").trim();
     const isList = (s: string) => /^([-*+]|\d+\.)\s/.test(s.trim());
+
+    if (!normalized) return "";
+
+    const hasBlankLine = /\n\s*\n/.test(normalized);
+    const hasLineBreak = normalized.includes("\n");
+    const hasList = normalized.split("\n").some(isList);
+
+    if (!hasBlankLine && !hasLineBreak && !hasList) {
+      const sentences = normalized.match(/[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g) ?? [normalized];
+      const paragraphs: string[] = [];
+      let current = "";
+
+      sentences.forEach((sentence) => {
+        const next = sentence.trim();
+        if (!next) return;
+        const candidate = current ? `${current} ${next}` : next;
+        if (current && candidate.length > 170) {
+          paragraphs.push(current);
+          current = next;
+        } else {
+          current = candidate;
+        }
+      });
+
+      if (current) paragraphs.push(current);
+      return paragraphs.join("\n\n");
+    }
+
+    const lines = normalized.split("\n");
     const out: string[] = [];
     for (let i = 0; i < lines.length; i++) {
       out.push(lines[i]);
@@ -79,8 +108,22 @@ export default function PortfolioChat() {
       return <span className="whitespace-pre-wrap">{text}</span>;
     }
     return (
-      <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-3 prose-ul:my-3 prose-ol:my-3 prose-li:my-1 prose-headings:my-2 prose-a:text-primary leading-relaxed">
-        <ReactMarkdown>{normalizeForMarkdown(text)}</ReactMarkdown>
+      <div className="max-w-none leading-relaxed">
+        <ReactMarkdown
+          components={{
+            p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
+            ul: ({ children }) => <ul className="mb-3 list-disc space-y-2 pl-4 last:mb-0">{children}</ul>,
+            ol: ({ children }) => <ol className="mb-3 list-decimal space-y-2 pl-4 last:mb-0">{children}</ol>,
+            li: ({ children }) => <li>{children}</li>,
+            a: ({ children, href }) => (
+              <a href={href} target="_blank" rel="noreferrer" className="text-primary underline underline-offset-2">
+                {children}
+              </a>
+            ),
+          }}
+        >
+          {normalizeForMarkdown(text)}
+        </ReactMarkdown>
       </div>
     );
   };

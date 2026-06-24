@@ -1,4 +1,4 @@
-import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { createGroq } from "@ai-sdk/groq";
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 
@@ -62,23 +62,23 @@ export const Route = createFileRoute("/api/chat")({
 
           // Server-only secret. Never expose via VITE_*. Read inside handler
           // so Vercel/Workers per-request env injection works.
-          const key = process.env.LOVABLE_API_KEY;
+          const key = process.env.GROQ_API_KEY;
           if (!key) {
             console.error(
-              "[/api/chat] Missing LOVABLE_API_KEY env var. " +
+              "[/api/chat] Missing GROQ_API_KEY env var. " +
                 "Add it in Vercel → Settings → Environment Variables → Production " +
                 "(and Preview if you want preview deployments to work).",
             );
             return new Response(
-              "Server configuration error: missing LOVABLE_API_KEY. " +
+              "Server configuration error: missing GROQ_API_KEY. " +
                 "Add it in Vercel → Settings → Environment Variables → Production.",
               { status: 500 },
             );
           }
 
-          const gateway = createLovableAiGatewayProvider(key);
+          const groq = createGroq({ apiKey: key });
           const result = streamText({
-            model: gateway("google/gemini-3-flash-preview"),
+            model: groq("llama-3.3-70b-versatile"),
             system: SYSTEM_PROMPT,
             messages: await convertToModelMessages(messages),
             onError: ({ error }) => {

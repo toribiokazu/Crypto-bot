@@ -56,6 +56,23 @@ export default function PortfolioChat() {
   const getText = (m: UIMessage) =>
     m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
 
+  // Ensure paragraphs are visually separated even when the model emits only
+  // single newlines between them. Markdown needs a blank line between blocks.
+  const normalizeForMarkdown = (text: string) => {
+    const lines = text.replace(/\r\n/g, "\n").split("\n");
+    const isList = (s: string) => /^([-*+]|\d+\.)\s/.test(s.trim());
+    const out: string[] = [];
+    for (let i = 0; i < lines.length; i++) {
+      out.push(lines[i]);
+      const cur = lines[i].trim();
+      const next = (lines[i + 1] ?? "").trim();
+      if (!cur || !next) continue;
+      if (isList(cur) && isList(next)) continue;
+      out.push("");
+    }
+    return out.join("\n");
+  };
+
   const renderMessage = (m: UIMessage) => {
     const text = getText(m);
     if (m.role === "user") {
@@ -63,7 +80,7 @@ export default function PortfolioChat() {
     }
     return (
       <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-3 prose-ul:my-3 prose-ol:my-3 prose-li:my-1 prose-headings:my-2 prose-a:text-primary leading-relaxed">
-        <ReactMarkdown>{text}</ReactMarkdown>
+        <ReactMarkdown>{normalizeForMarkdown(text)}</ReactMarkdown>
       </div>
     );
   };

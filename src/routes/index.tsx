@@ -102,7 +102,12 @@ const works: {
    image:"/mailchimp-airtable.png",
    url: "https://github.com/toribiokazu/email-nurture-system",
   },
-  { title: "WordPress Product Site", tag: "WordPress · SEO", desc: "Redesigned product website with optimized landing pages and CRM-connected forms." },
+  { 
+    title: "WordPress Product Site", 
+    tag: "WordPress · SEO", 
+    desc: "Redesigned a WordPress website with optimized landing pages and automated GoHighLevel CRM integration for efficient lead capture and sales automation.",
+    image: "Wordpress-GHL.png",
+  },
   { title: "CRM Migration & Cleanup", tag: "Zoho · GoHighLevel", desc: "Migrated 10k+ contacts, restructured pipelines, and trained the team on new workflows." },
   { title: "AI Content Pipeline", tag: "ChatGPT · Make", desc: "End-to-end content generation, review, and publishing pipeline with human-in-the-loop." },
 ];

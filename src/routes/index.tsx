@@ -531,6 +531,82 @@ function Portfolio() {
   );
 }
 
+function ContactForm() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      setStatus("error");
+      setErrorMsg("Please fill in all fields.");
+      return;
+    }
+    setStatus("sending");
+    setErrorMsg("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || "Failed to send message");
+      }
+      setStatus("success");
+      setName(""); setEmail(""); setMessage("");
+    } catch (err) {
+      setStatus("error");
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong");
+    }
+  };
+
+  return (
+    <form className="reveal card-elevated rounded-2xl p-6 space-y-4" onSubmit={onSubmit}>
+      <div>
+        <label className="text-xs font-medium text-muted-foreground">Name</label>
+        <input
+          type="text" value={name} onChange={(e) => setName(e.target.value)}
+          required maxLength={100} placeholder="Your name"
+          className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-sm outline-none focus:border-primary transition"
+        />
+      </div>
+      <div>
+        <label className="text-xs font-medium text-muted-foreground">Email</label>
+        <input
+          type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+          required maxLength={255} placeholder="you@email.com"
+          className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-sm outline-none focus:border-primary transition"
+        />
+      </div>
+      <div>
+        <label className="text-xs font-medium text-muted-foreground">Message</label>
+        <textarea
+          rows={5} value={message} onChange={(e) => setMessage(e.target.value)}
+          required maxLength={2000} placeholder="Tell me about your project..."
+          className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-sm outline-none focus:border-primary transition"
+        />
+      </div>
+      <button
+        type="submit" disabled={status === "sending"}
+        className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition disabled:opacity-60"
+      >
+        {status === "sending" ? "Sending..." : <>Send message <ArrowRight className="h-4 w-4" /></>}
+      </button>
+      {status === "success" && (
+        <p className="text-sm text-green-600 dark:text-green-400">Thanks! Your message has been sent — I'll reply soon.</p>
+      )}
+      {status === "error" && (
+        <p className="text-sm text-red-600 dark:text-red-400">{errorMsg || "Couldn't send your message. Please try again."}</p>
+      )}
+    </form>
+  );
+}
+
 function SectionHeader({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
     <div className="reveal max-w-2xl">

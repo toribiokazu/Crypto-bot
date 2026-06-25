@@ -6,7 +6,8 @@ import {
   Github, Linkedin, Sun, Moon, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import PortfolioChat from "@/components/PortfolioChat";
-import xeroAsanaImg from "/assets/xero-asana.png";
+import aiLeadRoutingImg from "@/assets/ai-lead-routing.png";
+import xeroAsanaImg from "@/assets/xero-asana.png";
 
 
 export const Route = createFileRoute("/")({
@@ -85,7 +86,7 @@ const works: {
     title: "AI Lead Routing Workflow",
     tag: "n8n · GoHighLevel · Groq AI",
     desc: "Webhook-driven n8n workflow that qualifies inbound GHL leads with AI, tags them hot/warm/cold, creates opportunities and tasks, and pings Slack — cutting response time by 80%.",
-    image: "/assets/ai-lead-routing.png",
+    image: aiLeadRoutingImg.url,
     url: "https://github.com/toribiokazu/ai-lead-routing-ghl",
   },
   {

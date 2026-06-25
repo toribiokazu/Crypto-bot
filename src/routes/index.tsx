@@ -111,9 +111,14 @@ const works: {
   { title: "CRM Migration & Cleanup", 
    tag: "Zoho · GoHighLevel", 
    desc: "Migrated 10,000+ contacts from Zoho to GoHighLevel, cleaned and standardized CRM data, restructured sales pipelines, and implemented improved workflows for a more efficient sales process.",
-   image: "/zoho-ghl.png"
+   image: "/zoho-ghl.png",
   },
-  { title: "AI Content Pipeline", tag: "ChatGPT · Make", desc: "End-to-end content generation, review, and publishing pipeline with human-in-the-loop." },
+  { title: "AI Content Pipeline", 
+   tag: "ChatGPT · Make", 
+   desc: "End-to-end content generation, review, and publishing pipeline with human-in-the-loop.",
+   image: "/ai-content-pipeline.png",
+   url: "https://github.com/toribiokazu/ai-content-pipeline",
+  },
 ];
 
 const testimonials = [

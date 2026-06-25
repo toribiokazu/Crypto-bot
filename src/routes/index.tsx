@@ -75,11 +75,29 @@ const experience = [
   },
 ];
 
-const works = [
-  { title: "AI Lead Routing Workflow", tag: "n8n · GoHighLevel", desc: "Automated qualification and assignment of inbound leads, cutting response time by 80%." },
+const works: {
+  title: string;
+  tag: string;
+  desc: string;
+  image?: string;
+  url?: string;
+}[] = [
+  {
+    title: "AI Lead Routing Workflow",
+    tag: "n8n · GoHighLevel · Groq AI",
+    desc: "Webhook-driven n8n workflow that qualifies inbound GHL leads with AI, tags them hot/warm/cold, creates opportunities and tasks, and pings Slack — cutting response time by 80%.",
+    image: aiLeadRoutingImg.url,
+    url: "https://github.com/toribiokazu/ai-lead-routing-ghl",
+  },
+  {
+    title: "Xero → Asana Transaction Export",
+    tag: "Make.com · Xero · Asana · Google Sheets",
+    desc: "Make.com scenario that exports Xero account transactions to a CSV via Google Sheets and uploads it back to the originating Asana task as an attachment when marked complete.",
+    image: xeroAsanaImg.url,
+    url: "https://github.com/toribiokazu/xero-asana-transaction-export-automation",
+  },
   { title: "Email Nurture System", tag: "Mailchimp · Airtable", desc: "Multi-touch nurture sequences with audience segmentation and dynamic content." },
   { title: "WordPress Product Site", tag: "WordPress · SEO", desc: "Redesigned product website with optimized landing pages and CRM-connected forms." },
-  { title: "Social Campaign Suite", tag: "Canva · Meta Ads", desc: "Full set of branded creatives, flyers, and ad assets for a monthly campaign rollout." },
   { title: "CRM Migration & Cleanup", tag: "Zoho · GoHighLevel", desc: "Migrated 10k+ contacts, restructured pipelines, and trained the team on new workflows." },
   { title: "AI Content Pipeline", tag: "ChatGPT · Make", desc: "End-to-end content generation, review, and publishing pipeline with human-in-the-loop." },
 ];

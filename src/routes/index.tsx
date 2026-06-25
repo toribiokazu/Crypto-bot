@@ -426,20 +426,53 @@ function Portfolio() {
       <section id="works" className="mx-auto max-w-6xl px-6 py-24">
         <SectionHeader eyebrow="Previous Works" title="Selected projects & systems" />
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {works.map((w, i) => (
-            <article key={w.title} onMouseDown={addRipple} className="reveal ripple card-elevated group rounded-2xl overflow-hidden cursor-pointer">
-              <div className="relative aspect-[4/3] overflow-hidden" style={{ background: `linear-gradient(135deg, oklch(0.${75+i} 0.${12+i} ${40+i*40}), oklch(0.85 0.08 ${260-i*30}))` }}>
-                <div className="absolute inset-0 grid place-items-center font-display text-6xl font-bold text-foreground/15">
-                  {String(i + 1).padStart(2, "0")}
+          {works.map((w, i) => {
+            const cardInner = (
+              <>
+                <div
+                  className="relative aspect-[4/3] overflow-hidden"
+                  style={
+                    w.image
+                      ? { background: "oklch(0.18 0.02 260)" }
+                      : { background: `linear-gradient(135deg, oklch(0.${75+i} 0.${12+i} ${40+i*40}), oklch(0.85 0.08 ${260-i*30}))` }
+                  }
+                >
+                  {w.image ? (
+                    <img
+                      src={w.image}
+                      alt={`${w.title} workflow preview`}
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 grid place-items-center font-display text-6xl font-bold text-foreground/15">
+                      {String(i + 1).padStart(2, "0")}
+                    </div>
+                  )}
                 </div>
-              </div>
-              <div className="p-6">
-                <div className="text-xs font-medium text-primary">{w.tag}</div>
-                <h3 className="mt-2 text-lg font-semibold">{w.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{w.desc}</p>
-              </div>
-            </article>
-          ))}
+                <div className="p-6">
+                  <div className="text-xs font-medium text-primary">{w.tag}</div>
+                  <h3 className="mt-2 text-lg font-semibold">{w.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">{w.desc}</p>
+                  {w.url && (
+                    <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
+                      <Github className="h-3.5 w-3.5" /> View on GitHub <ArrowRight className="h-3 w-3" />
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+            const className = "reveal ripple card-elevated group rounded-2xl overflow-hidden cursor-pointer block";
+            return w.url ? (
+              <a key={w.title} href={w.url} target="_blank" rel="noreferrer" onMouseDown={addRipple} className={className}>
+                {cardInner}
+              </a>
+            ) : (
+              <article key={w.title} onMouseDown={addRipple} className={className}>
+                {cardInner}
+              </article>
+            );
+          })}
         </div>
       </section>
 

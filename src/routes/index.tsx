@@ -106,9 +106,13 @@ const works: {
     title: "WordPress Product Site", 
     tag: "WordPress · SEO", 
     desc: "Redesigned a WordPress website with optimized landing pages and automated GoHighLevel CRM integration for efficient lead capture and sales automation.",
-    image: "Wordpress-GHL.png",
+    image: "/Wordpress-GHL.png",
   },
-  { title: "CRM Migration & Cleanup", tag: "Zoho · GoHighLevel", desc: "Migrated 10k+ contacts, restructured pipelines, and trained the team on new workflows." },
+  { title: "CRM Migration & Cleanup", 
+   tag: "Zoho · GoHighLevel", 
+   desc: "Successfully migrated over 10,000 CRM contacts from Zoho to GoHighLevel, performing data cleanup, duplicate removal, pipeline restructuring, and workflow optimization to improve data accuracy and streamline sales operations.",
+   image: "/zoho-ghl.png"
+  },
   { title: "AI Content Pipeline", tag: "ChatGPT · Make", desc: "End-to-end content generation, review, and publishing pipeline with human-in-the-loop." },
 ];
 

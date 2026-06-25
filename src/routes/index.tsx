@@ -96,9 +96,9 @@ const works: {
     url: "https://github.com/toribiokazu/xero-asana-transaction-export-automation",
   },
   { 
-   title: "Email Nurture System", 
-   tag: "Mailchimp · Airtable", 
-   desc: "A fully automated email nurture system built with n8n, Mailchimp, Airtable, and Slack. The workflow validates contacts, manages subscriber records, tracks engagement, organizes customer lifecycle data, and automatically enrolls leads into personalized email campaigns while providing real-time team notifications.",
+   title: "Email Nurture System",
+   tag: "Mailchimp · Airtable",
+   desc: "Built an automated email nurture system using n8n, Mailchimp, and Airtable to manage subscribers, organize campaigns, eliminate duplicate enrollments, and streamline marketing workflows.",
    image:"/mailchimp-airtable.png",
    url: "https://github.com/toribiokazu/email-nurture-system",
   },

@@ -110,7 +110,7 @@ const works: {
   },
   { title: "CRM Migration & Cleanup", 
    tag: "Zoho · GoHighLevel", 
-   desc: "Successfully migrated over 10,000 CRM contacts from Zoho to GoHighLevel, performing data cleanup, duplicate removal, pipeline restructuring, and workflow optimization to improve data accuracy and streamline sales operations.",
+   desc: "Migrated 10,000+ contacts from Zoho to GoHighLevel, cleaned and standardized CRM data, restructured sales pipelines, and implemented improved workflows for a more efficient sales process.",
    image: "/zoho-ghl.png"
   },
   { title: "AI Content Pipeline", tag: "ChatGPT · Make", desc: "End-to-end content generation, review, and publishing pipeline with human-in-the-loop." },

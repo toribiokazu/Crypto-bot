@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Resend } from "resend";
 import { z } from "zod";
 
 const ContactSchema = z.object({
@@ -31,7 +30,6 @@ export const Route = createFileRoute("/api/contact")({
             return Response.json({ error: "Email service not configured" }, { status: 500 });
           }
 
-          const resend = new Resend(apiKey);
           const safe = (s: string) =>
             s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
@@ -44,17 +42,25 @@ export const Route = createFileRoute("/api/contact")({
               <p style="white-space:pre-wrap;background:#f6f6f6;padding:12px;border-radius:8px">${safe(message)}</p>
             </div>`;
 
-          const { error } = await resend.emails.send({
-            from: "Portfolio Contact <onboarding@resend.dev>",
-            to: [TO_EMAIL],
-            replyTo: email,
-            subject: `Portfolio inquiry from ${name}`,
-            html,
-            text: `From: ${name} <${email}>\n\n${message}`,
+          const res = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+              from: "Portfolio Contact <onboarding@resend.dev>",
+              to: [TO_EMAIL],
+              reply_to: email,
+              subject: `Portfolio inquiry from ${name}`,
+              html,
+              text: `From: ${name} <${email}>\n\n${message}`,
+            }),
           });
 
-          if (error) {
-            console.error("[/api/contact] Resend error:", error);
+          if (!res.ok) {
+            const errBody = await res.text();
+            console.error("[/api/contact] Resend error:", res.status, errBody);
             return Response.json({ error: "Failed to send email" }, { status: 502 });
           }
 

@@ -115,7 +115,7 @@ const works: {
   },
   { title: "AI Content Pipeline", 
    tag: "ChatGPT · Make", 
-   desc: "End-to-end content generation, review, and publishing pipeline with human-in-the-loop.",
+   desc: "An AI-driven content pipeline built with ChatGPT, n8n, Airtable, Slack, and WordPress that automates content generation, review, approval, and publishing through a structured human-in-the-loop workflow.",
    image: "/ai-content-pipeline.png",
    url: "https://github.com/toribiokazu/ai-content-pipeline",
   },

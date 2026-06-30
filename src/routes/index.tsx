@@ -3,8 +3,16 @@ import { useEffect, useState, useCallback } from "react";
 import {
   Mail, Phone, MapPin, Sparkles, Workflow, Megaphone, Database,
   Globe, PenTool, ArrowRight, Quote, Award, Briefcase,
-  Github, Linkedin, Sun, Moon, ChevronLeft, ChevronRight,
+  Github, Linkedin, Sun, Moon, ChevronLeft, ChevronRight, ExternalLink,
 } from "lucide-react";
+import {
+  SiN8N, SiZapier, SiAirtable, SiOpenai, SiWordpress, SiCanva,
+  SiAdobephotoshop, SiGoogleanalytics, SiAsana, SiXero, SiSlack,
+  SiMailchimp, SiNotion, SiGooglesheets, SiMake, SiAdobe,
+} from "react-icons/si";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
 import PortfolioChat from "@/components/PortfolioChat";
 
 

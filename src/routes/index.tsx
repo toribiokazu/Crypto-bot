@@ -3,8 +3,16 @@ import { useEffect, useState, useCallback } from "react";
 import {
   Mail, Phone, MapPin, Sparkles, Workflow, Megaphone, Database,
   Globe, PenTool, ArrowRight, Quote, Award, Briefcase,
-  Github, Linkedin, Sun, Moon, ChevronLeft, ChevronRight,
+  Github, Linkedin, Sun, Moon, ChevronLeft, ChevronRight, ExternalLink,
 } from "lucide-react";
+import {
+  SiN8N, SiZapier, SiAirtable, SiOpenai, SiWordpress, SiCanva,
+  SiGoogleanalytics, SiAsana, SiXero, SiSlack,
+  SiMailchimp, SiNotion, SiGooglesheets, SiMake,
+} from "react-icons/si";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
 import PortfolioChat from "@/components/PortfolioChat";
 
 
@@ -134,6 +142,50 @@ const skills = [
   "Zoho CRM", "Brivity", "KW Command", "WordPress", "Canva", "Adobe Photoshop",
   "After Effects", "Google Analytics", "DocuSign", "Calendly", "RingCentral",
 ];
+
+const tools = [
+  { name: "n8n", Icon: SiN8N },
+  { name: "Make", Icon: SiMake },
+  { name: "Zapier", Icon: SiZapier },
+  { name: "Airtable", Icon: SiAirtable },
+  { name: "OpenAI", Icon: SiOpenai },
+  { name: "WordPress", Icon: SiWordpress },
+  { name: "Canva", Icon: SiCanva },
+  { name: "Google Analytics", Icon: SiGoogleanalytics },
+  { name: "Google Sheets", Icon: SiGooglesheets },
+  { name: "Asana", Icon: SiAsana },
+  { name: "Xero", Icon: SiXero },
+  { name: "Slack", Icon: SiSlack },
+  { name: "Mailchimp", Icon: SiMailchimp },
+  { name: "Notion", Icon: SiNotion },
+];
+
+function ToolsMarquee() {
+  const loop = [...tools, ...tools];
+  return (
+    <section className="border-y border-border bg-card/30">
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          Tools & technologies I work with
+        </p>
+        <div className="marquee-mask mt-6 overflow-hidden">
+          <div className="marquee-track flex w-max gap-12">
+            {loop.map((t, i) => (
+              <div
+                key={`${t.name}-${i}`}
+                className="flex shrink-0 items-center gap-3 rounded-full border border-border bg-card/60 px-5 py-2.5 text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+                title={t.name}
+              >
+                <t.Icon className="h-5 w-5 text-primary" />
+                <span className="font-display text-sm font-semibold">{t.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function TestimonialCarousel() {
   const [active, setActive] = useState(0);
@@ -389,6 +441,11 @@ function Portfolio() {
         </div>
       </section>
 
+      {/* TOOLS MARQUEE */}
+      <ToolsMarquee />
+
+
+
       {/* SERVICES */}
       <section id="services" className="mx-auto max-w-6xl px-6 py-24">
         <SectionHeader eyebrow="Services" title="What I can do for you" />
@@ -442,58 +499,8 @@ function Portfolio() {
       </section>
 
       {/* WORKS */}
-      <section id="works" className="mx-auto max-w-6xl px-6 py-24">
-        <SectionHeader eyebrow="Previous Works" title="Selected projects & systems" />
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {works.map((w, i) => {
-            const cardInner = (
-              <>
-                <div
-                  className="relative aspect-[4/3] overflow-hidden"
-                  style={
-                    w.image
-                      ? { background: "oklch(0.18 0.02 260)" }
-                      : { background: `linear-gradient(135deg, oklch(0.${75+i} 0.${12+i} ${40+i*40}), oklch(0.85 0.08 ${260-i*30}))` }
-                  }
-                >
-                  {w.image ? (
-                    <img
-                      src={w.image}
-                      alt={`${w.title} workflow preview`}
-                      loading="lazy"
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 grid place-items-center font-display text-6xl font-bold text-foreground/15">
-                      {String(i + 1).padStart(2, "0")}
-                    </div>
-                  )}
-                </div>
-                <div className="p-6">
-                  <div className="text-xs font-medium text-primary">{w.tag}</div>
-                  <h3 className="mt-2 text-lg font-semibold">{w.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">{w.desc}</p>
-                  {w.url && (
-                    <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
-                      <Github className="h-3.5 w-3.5" /> View on GitHub <ArrowRight className="h-3 w-3" />
-                    </div>
-                  )}
-                </div>
-              </>
-            );
-            const className = "reveal ripple card-elevated group rounded-2xl overflow-hidden cursor-pointer block";
-            return w.url ? (
-              <a key={w.title} href={w.url} target="_blank" rel="noreferrer" onMouseDown={addRipple} className={className}>
-                {cardInner}
-              </a>
-            ) : (
-              <article key={w.title} onMouseDown={addRipple} className={className}>
-                {cardInner}
-              </article>
-            );
-          })}
-        </div>
-      </section>
+      <WorksSection />
+
 
       {/* TESTIMONIALS */}
       <section id="testimonials" className="border-y border-border bg-card/40">
@@ -658,3 +665,99 @@ function Field({ label, type, placeholder }: { label: string; type: string; plac
     </div>
   );
 }
+
+function WorksSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const active = openIndex !== null ? works[openIndex] : null;
+
+  return (
+    <section id="works" className="mx-auto max-w-6xl px-6 py-24">
+      <SectionHeader eyebrow="Previous Works" title="Selected projects & systems" />
+      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {works.map((w, i) => (
+          <article
+            key={w.title}
+            onClick={() => setOpenIndex(i)}
+            onMouseDown={addRipple}
+            className="reveal ripple card-elevated group rounded-2xl overflow-hidden cursor-pointer block text-left"
+          >
+            <div
+              className="relative aspect-[4/3] overflow-hidden"
+              style={
+                w.image
+                  ? { background: "oklch(0.18 0.02 260)" }
+                  : { background: `linear-gradient(135deg, oklch(0.${75+i} 0.${12+i} ${40+i*40}), oklch(0.85 0.08 ${260-i*30}))` }
+              }
+            >
+              {w.image ? (
+                <img
+                  src={w.image}
+                  alt={`${w.title} workflow preview`}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <div className="absolute inset-0 grid place-items-center font-display text-6xl font-bold text-foreground/15">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+              )}
+            </div>
+            <div className="p-6">
+              <div className="text-xs font-medium text-primary">{w.tag}</div>
+              <h3 className="mt-2 text-lg font-semibold">{w.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{w.desc}</p>
+              <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
+                View details <ArrowRight className="h-3 w-3" />
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <Dialog open={openIndex !== null} onOpenChange={(o) => !o && setOpenIndex(null)}>
+        <DialogContent className="max-w-3xl p-0 overflow-hidden border-border bg-card animate-in fade-in-0 zoom-in-95 duration-300">
+          {active && (
+            <>
+              {active.image && (
+                <div className="relative w-full max-h-[60vh] overflow-hidden bg-background">
+                  <img
+                    src={active.image}
+                    alt={`${active.title} workflow preview`}
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
+              )}
+              <div className="p-6 md:p-8">
+                <DialogHeader>
+                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                    {active.tag}
+                  </div>
+                  <DialogTitle className="font-display text-2xl md:text-3xl">
+                    {active.title}
+                  </DialogTitle>
+                  <DialogDescription className="text-base text-muted-foreground leading-relaxed pt-2">
+                    {active.desc}
+                  </DialogDescription>
+                </DialogHeader>
+                {active.url && (
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <a
+                      href={active.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition"
+                    >
+                      <Github className="h-4 w-4" /> View on GitHub
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </section>
+  );
+}
+

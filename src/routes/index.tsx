@@ -143,6 +143,50 @@ const skills = [
   "After Effects", "Google Analytics", "DocuSign", "Calendly", "RingCentral",
 ];
 
+const tools = [
+  { name: "n8n", Icon: SiN8N },
+  { name: "Make", Icon: SiMake },
+  { name: "Zapier", Icon: SiZapier },
+  { name: "Airtable", Icon: SiAirtable },
+  { name: "OpenAI", Icon: SiOpenai },
+  { name: "WordPress", Icon: SiWordpress },
+  { name: "Canva", Icon: SiCanva },
+  { name: "Google Analytics", Icon: SiGoogleanalytics },
+  { name: "Google Sheets", Icon: SiGooglesheets },
+  { name: "Asana", Icon: SiAsana },
+  { name: "Xero", Icon: SiXero },
+  { name: "Slack", Icon: SiSlack },
+  { name: "Mailchimp", Icon: SiMailchimp },
+  { name: "Notion", Icon: SiNotion },
+];
+
+function ToolsMarquee() {
+  const loop = [...tools, ...tools];
+  return (
+    <section className="border-y border-border bg-card/30">
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          Tools & technologies I work with
+        </p>
+        <div className="marquee-mask mt-6 overflow-hidden">
+          <div className="marquee-track flex w-max gap-12">
+            {loop.map((t, i) => (
+              <div
+                key={`${t.name}-${i}`}
+                className="flex shrink-0 items-center gap-3 rounded-full border border-border bg-card/60 px-5 py-2.5 text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+                title={t.name}
+              >
+                <t.Icon className="h-5 w-5 text-primary" />
+                <span className="font-display text-sm font-semibold">{t.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function TestimonialCarousel() {
   const [active, setActive] = useState(0);
   const [isPaused, setIsPaused] = useState(false);

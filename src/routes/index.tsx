@@ -144,23 +144,25 @@ const skills = [
 ];
 
 const tools = [
-  { name: "n8n", Icon: SiN8N },
-  { name: "Make", Icon: SiMake },
-  { name: "Zapier", Icon: SiZapier },
-  { name: "Airtable", Icon: SiAirtable },
-  { name: "OpenAI", Icon: SiOpenai },
-  { name: "WordPress", Icon: SiWordpress },
-  { name: "Canva", Icon: SiCanva },
-  { name: "Google Analytics", Icon: SiGoogleanalytics },
-  { name: "Google Sheets", Icon: SiGooglesheets },
-  { name: "Asana", Icon: SiAsana },
-  { name: "Xero", Icon: SiXero },
-  { name: "Slack", Icon: SiSlack },
-  { name: "Mailchimp", Icon: SiMailchimp },
-  { name: "Notion", Icon: SiNotion },
+  { name: "n8n", Icon: SiN8N, color: "#EA4B71" },
+  { name: "Make", Icon: SiMake, color: "#6B46C1" },
+  { name: "Zapier", Icon: SiZapier, color: "#FF4A00" },
+  { name: "Airtable", Icon: SiAirtable, color: "#18BFFF" },
+  { name: "OpenAI", Icon: SiOpenai, lightColor: "#000000", darkColor: "#FFFFFF" },
+  { name: "WordPress", Icon: SiWordpress, color: "#21759B" },
+  { name: "Canva", Icon: SiCanva, color: "#00C4CC" },
+  { name: "Google Analytics", Icon: SiGoogleanalytics, color: "#E37400" },
+  { name: "Google Sheets", Icon: SiGooglesheets, color: "#34A853" },
+  { name: "Asana", Icon: SiAsana, color: "#F06A6A" },
+  { name: "Xero", Icon: SiXero, color: "#13B5EA" },
+  { name: "Slack", Icon: SiSlack, lightColor: "#4A154B", darkColor: "#ECB22E" },
+  { name: "Mailchimp", Icon: SiMailchimp, lightColor: "#007C89", darkColor: "#FFE01B" },
+  { name: "Notion", Icon: SiNotion, lightColor: "#000000", darkColor: "#FFFFFF" },
 ];
 
 function ToolsMarquee() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const loop = [...tools, ...tools];
   return (
     <section className="border-y border-border bg-card/30">
@@ -170,16 +172,20 @@ function ToolsMarquee() {
         </p>
         <div className="marquee-mask mt-6 overflow-hidden">
           <div className="marquee-track flex w-max gap-12">
-            {loop.map((t, i) => (
-              <div
-                key={`${t.name}-${i}`}
-                className="flex shrink-0 items-center gap-3 rounded-full border border-border bg-card/60 px-5 py-2.5 text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
-                title={t.name}
-              >
-                <t.Icon className="h-5 w-5 text-primary" />
-                <span className="font-display text-sm font-semibold">{t.name}</span>
-              </div>
-            ))}
+            {loop.map((t, i) => {
+              const color =
+                t.color ?? (isDark ? t.darkColor : t.lightColor);
+              return (
+                <div
+                  key={`${t.name}-${i}`}
+                  className="flex shrink-0 items-center gap-3 rounded-full border border-border bg-card/60 px-5 py-2.5 text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+                  title={t.name}
+                >
+                  <t.Icon className="h-5 w-5" style={color ? { color } : undefined} />
+                  <span className="font-display text-sm font-semibold">{t.name}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

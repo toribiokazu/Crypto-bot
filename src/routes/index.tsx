@@ -665,3 +665,99 @@ function Field({ label, type, placeholder }: { label: string; type: string; plac
     </div>
   );
 }
+
+function WorksSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const active = openIndex !== null ? works[openIndex] : null;
+
+  return (
+    <section id="works" className="mx-auto max-w-6xl px-6 py-24">
+      <SectionHeader eyebrow="Previous Works" title="Selected projects & systems" />
+      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {works.map((w, i) => (
+          <article
+            key={w.title}
+            onClick={() => setOpenIndex(i)}
+            onMouseDown={addRipple}
+            className="reveal ripple card-elevated group rounded-2xl overflow-hidden cursor-pointer block text-left"
+          >
+            <div
+              className="relative aspect-[4/3] overflow-hidden"
+              style={
+                w.image
+                  ? { background: "oklch(0.18 0.02 260)" }
+                  : { background: `linear-gradient(135deg, oklch(0.${75+i} 0.${12+i} ${40+i*40}), oklch(0.85 0.08 ${260-i*30}))` }
+              }
+            >
+              {w.image ? (
+                <img
+                  src={w.image}
+                  alt={`${w.title} workflow preview`}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <div className="absolute inset-0 grid place-items-center font-display text-6xl font-bold text-foreground/15">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+              )}
+            </div>
+            <div className="p-6">
+              <div className="text-xs font-medium text-primary">{w.tag}</div>
+              <h3 className="mt-2 text-lg font-semibold">{w.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{w.desc}</p>
+              <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
+                View details <ArrowRight className="h-3 w-3" />
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <Dialog open={openIndex !== null} onOpenChange={(o) => !o && setOpenIndex(null)}>
+        <DialogContent className="max-w-3xl p-0 overflow-hidden border-border bg-card animate-in fade-in-0 zoom-in-95 duration-300">
+          {active && (
+            <>
+              {active.image && (
+                <div className="relative w-full max-h-[60vh] overflow-hidden bg-background">
+                  <img
+                    src={active.image}
+                    alt={`${active.title} workflow preview`}
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
+              )}
+              <div className="p-6 md:p-8">
+                <DialogHeader>
+                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                    {active.tag}
+                  </div>
+                  <DialogTitle className="font-display text-2xl md:text-3xl">
+                    {active.title}
+                  </DialogTitle>
+                  <DialogDescription className="text-base text-muted-foreground leading-relaxed pt-2">
+                    {active.desc}
+                  </DialogDescription>
+                </DialogHeader>
+                {active.url && (
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <a
+                      href={active.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition"
+                    >
+                      <Github className="h-4 w-4" /> View on GitHub
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </section>
+  );
+}
+

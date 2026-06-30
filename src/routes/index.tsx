@@ -7,8 +7,8 @@ import {
 } from "lucide-react";
 import {
   SiN8N, SiZapier, SiAirtable, SiOpenai, SiWordpress, SiCanva,
-  SiAdobephotoshop, SiGoogleanalytics, SiAsana, SiXero, SiSlack,
-  SiMailchimp, SiNotion, SiGooglesheets, SiMake, SiAdobe,
+  SiGoogleanalytics, SiAsana, SiXero, SiSlack,
+  SiMailchimp, SiNotion, SiGooglesheets, SiMake,
 } from "react-icons/si";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,

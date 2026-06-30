@@ -441,6 +441,11 @@ function Portfolio() {
         </div>
       </section>
 
+      {/* TOOLS MARQUEE */}
+      <ToolsMarquee />
+
+
+
       {/* SERVICES */}
       <section id="services" className="mx-auto max-w-6xl px-6 py-24">
         <SectionHeader eyebrow="Services" title="What I can do for you" />

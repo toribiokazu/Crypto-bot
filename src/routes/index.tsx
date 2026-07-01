@@ -336,7 +336,7 @@ function addRipple(e: React.MouseEvent<HTMLElement>) {
 
 function useReveal() {
   useEffect(() => {
-    const els = document.querySelectorAll(".reveal");
+    const els = document.querySelectorAll<HTMLElement>(".reveal");
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -351,6 +351,70 @@ function useReveal() {
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, []);
+}
+
+/** Count-up when scrolled into view. Parses "5+", "10k+", "100%" etc. */
+function useCountUp(target: string, duration = 1100) {
+  const ref = useRef<HTMLSpanElement | null>(null);
+  const [display, setDisplay] = useState(target);
+  const hasRun = useRef(false);
+
+  useEffect(() => {
+    const match = target.match(/^(\d+)(k)?(.*)$/i);
+    if (!match) { setDisplay(target); return; }
+    const base = parseInt(match[1], 10);
+    const isK = !!match[2];
+    const suffix = (isK ? "k" : "") + (match[3] ?? "");
+    const end = base;
+
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) { setDisplay(target); return; }
+
+    setDisplay("0" + suffix);
+
+    const node = ref.current;
+    if (!node) return;
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting || hasRun.current) return;
+        hasRun.current = true;
+        io.disconnect();
+        const start = performance.now();
+        const tick = (now: number) => {
+          const t = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+          const current = Math.round(end * eased);
+          setDisplay(current + suffix);
+          if (t < 1) requestAnimationFrame(tick);
+          else setDisplay(target);
+        };
+        requestAnimationFrame(tick);
+      });
+    }, { threshold: 0.4 });
+
+    io.observe(node);
+    return () => io.disconnect();
+  }, [target, duration]);
+
+  return { ref, display };
+}
+
+function StatCard({ k, v, index }: { k: string; v: string; index: number }) {
+  const { ref, display } = useCountUp(k);
+  return (
+    <div
+      className="reveal hover-lift card-elevated rounded-2xl p-5"
+      style={{ transitionDelay: `${Math.min(index, 6) * 60}ms` }}
+    >
+      <div className="font-display text-3xl font-bold text-gradient">
+        <span ref={ref}>{display}</span>
+      </div>
+      <div className="mt-1 text-sm text-muted-foreground">{v}</div>
+    </div>
+  );
 }
 
 function Portfolio() {

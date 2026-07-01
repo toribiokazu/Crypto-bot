@@ -16,6 +16,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import PortfolioChat from "@/components/PortfolioChat";
+import CalendlyEmbed from "@/components/CalendlyEmbed";
 
 
 

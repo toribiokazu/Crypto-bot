@@ -483,11 +483,20 @@ function Portfolio() {
               {/* 3D tilted frame */}
               <div className="rounded-[2rem] p-1.5 transition-transform duration-500 ease-out hover:[transform:rotateY(-8deg)_rotateX(5deg)_scale(1.02)]"
                 style={{ background: "var(--gradient-amber)", transformStyle: "preserve-3d" }}>
-             <img
-              src="/kazu-hero.png"
-              alt="Kazu Toribio"
-              className="w-[420px] md:w-[500px] h-auto rounded-[1.6rem] object-cover"
+             <div className="relative rounded-[1.6rem]">
+              <img
+               src="/kazu-hero.png"
+               alt="Kazu Toribio"
+               className="w-[420px] md:w-[500px] h-auto rounded-[1.6rem] object-cover block transition-opacity duration-500 ease-out group-hover:opacity-0 motion-reduce:transition-none"
               />
+              <img
+               src="/kazu-hero-arms-crossed.png"
+               alt=""
+               aria-hidden="true"
+               loading="eager"
+               className="absolute inset-0 w-full h-full rounded-[1.6rem] object-cover pointer-events-none opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100 motion-reduce:transition-none"
+              />
+             </div>
               </div>
               {/* Floating badge */}
               <div className="absolute -bottom-4 -left-4 rounded-2xl bg-card border border-border px-4 py-3 shadow-xl transition-transform duration-500 ease-out group-hover:translate-z-[40px]"

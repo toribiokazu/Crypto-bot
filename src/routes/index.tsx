@@ -419,6 +419,7 @@ function StatCard({ k, v, index }: { k: string; v: string; index: number }) {
 
 function Portfolio() {
   useReveal();
+  const [heroFlipped, setHeroFlipped] = useState(false);
   return (
     <div id="top" className="min-h-screen bg-background text-foreground">
       <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -483,18 +484,24 @@ function Portfolio() {
               {/* 3D tilted frame */}
               <div className="rounded-[2rem] p-1.5 transition-transform duration-500 ease-out hover:[transform:rotateY(-8deg)_rotateX(5deg)_scale(1.02)]"
                 style={{ background: "var(--gradient-amber)", transformStyle: "preserve-3d" }}>
-             <div className="relative rounded-[1.6rem]">
+             <div
+              className="relative rounded-[1.6rem]"
+              onClick={() => setHeroFlipped((v) => !v)}
+              role="button"
+              tabIndex={0}
+              aria-label="Toggle hero photo pose"
+              >
               <img
                src="/kazu-hero.png"
                alt="Kazu Toribio"
-               className="w-[420px] md:w-[500px] h-auto rounded-[1.6rem] object-cover block transition-opacity duration-500 ease-out group-hover:opacity-0 motion-reduce:transition-none"
+               className={`w-[420px] md:w-[500px] h-auto rounded-[1.6rem] object-cover block transition-opacity duration-500 ease-out group-hover:opacity-0 motion-reduce:transition-none ${heroFlipped ? "opacity-0" : ""}`}
               />
               <img
                src="/kazu-hero-arms-crossed.png"
                alt=""
                aria-hidden="true"
                loading="eager"
-               className="absolute inset-0 w-full h-full rounded-[1.6rem] object-cover pointer-events-none opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100 motion-reduce:transition-none"
+               className={`absolute inset-0 w-full h-full rounded-[1.6rem] object-cover pointer-events-none opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100 motion-reduce:transition-none ${heroFlipped ? "opacity-100" : ""}`}
               />
              </div>
               </div>

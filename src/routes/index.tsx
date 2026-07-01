@@ -181,7 +181,7 @@ function ToolsMarquee() {
               return (
                 <div
                   key={`${t.name}-${i}`}
-                  className="flex shrink-0 items-center gap-3 rounded-full border border-border bg-card/60 px-5 py-2.5 text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+                  className="hover-lift flex shrink-0 items-center gap-3 rounded-full border border-border bg-card/60 px-5 py-2.5 text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
                   title={t.name}
                 >
                   <t.Icon className="h-5 w-5" style={color ? { color } : undefined} />

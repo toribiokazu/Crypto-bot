@@ -448,7 +448,7 @@ function Portfolio() {
       {/* HERO */}
       <section className="relative bg-hero-glow overflow-hidden">
         <div className="mx-auto max-w-6xl px-6 pt-20 pb-28 grid gap-12 lg:grid-cols-[1.4fr_1fr] items-center">
-          <div className="reveal">
+          <div className="hero-stagger">
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-4 py-1.5 text-xs text-muted-foreground">
               <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
               Available for new projects
@@ -460,13 +460,13 @@ function Portfolio() {
               I help businesses automate operations, streamline CRM workflows, and scale marketing systems using AI, n8n, Make, Zapier, and GoHighLevel.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href="https://calendly.com/toribiokazu/discovery-call" target="_blank" rel="noreferrer" onMouseDown={addRipple} className="ripple inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition" style={{ boxShadow: "var(--shadow-glow)" }}>
+              <a href="https://calendly.com/toribiokazu/discovery-call" target="_blank" rel="noreferrer" onMouseDown={addRipple} className="ripple hover-lift inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition" style={{ boxShadow: "var(--shadow-glow)" }}>
                 Book a discovery call <ArrowRight className="h-4 w-4" />
               </a>
-              <a href="#works" onMouseDown={addRipple} className="ripple inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 font-semibold hover:border-primary/50 transition">
+              <a href="#works" onMouseDown={addRipple} className="ripple hover-lift inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 font-semibold hover:border-primary/50 transition">
                 View my work
               </a>
-              <a href="#contact" onMouseDown={addRipple} className="ripple inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 font-semibold hover:border-primary/50 transition">
+              <a href="#contact" onMouseDown={addRipple} className="ripple hover-lift inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 font-semibold hover:border-primary/50 transition">
                 Get in touch
               </a>
             </div>

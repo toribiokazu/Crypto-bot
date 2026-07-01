@@ -679,7 +679,8 @@ function WorksSection() {
             key={w.title}
             onClick={() => setOpenIndex(i)}
             onMouseDown={addRipple}
-            className="reveal ripple card-elevated group rounded-2xl overflow-hidden cursor-pointer block text-left"
+            className="reveal ripple hover-lift card-elevated group rounded-2xl overflow-hidden cursor-pointer block text-left"
+            style={{ transitionDelay: `${Math.min(i, 6) * 60}ms` }}
           >
             <div
               className="relative aspect-[4/3] overflow-hidden"

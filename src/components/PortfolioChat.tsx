@@ -102,6 +102,26 @@ export default function PortfolioChat() {
     return out.join("\n");
   };
 
+  const renderSuggestions = () => (
+    <div className="flex flex-wrap gap-2">
+      {SUGGESTIONS.map((s) => (
+        <button
+          key={s.label}
+          onClick={() => {
+            if (s.action === "book") {
+              window.open(BOOKING_URL, "_blank", "noopener,noreferrer");
+            } else {
+              send(s.prompt);
+            }
+          }}
+          className="text-xs rounded-full border border-border bg-background px-3 py-1.5 hover:border-primary/50 hover:text-foreground transition"
+        >
+          {s.label}
+        </button>
+      ))}
+    </div>
+  );
+
   const renderMessage = (m: UIMessage) => {
     const text = getText(m);
     if (m.role === "user") {
@@ -179,23 +199,7 @@ export default function PortfolioChat() {
                   Hi! I'm Kazu's portfolio assistant. Ask me anything about his work, services, or book a discovery call. 👋
                 </div>
                 <div className="text-xs text-muted-foreground pt-1">Try one of these:</div>
-                <div className="flex flex-wrap gap-2">
-                  {SUGGESTIONS.map((s) => (
-                    <button
-                      key={s.label}
-                      onClick={() => {
-                        if (s.action === "book") {
-                          window.open(BOOKING_URL, "_blank", "noopener,noreferrer");
-                        } else {
-                          send(s.prompt);
-                        }
-                      }}
-                      className="text-xs rounded-full border border-border bg-background px-3 py-1.5 hover:border-primary/50 hover:text-foreground transition"
-                    >
-                      {s.label}
-                    </button>
-                  ))}
-                </div>
+                {renderSuggestions()}
                 <a
                   href="https://calendly.com/toribiokazu/discovery-call"
                   target="_blank"
@@ -234,6 +238,10 @@ export default function PortfolioChat() {
                   </span>
                 </div>
               </div>
+            )}
+
+            {!isLoading && messages.length > 0 && messages[messages.length - 1]?.role === "assistant" && (
+              <div className="pt-1">{renderSuggestions()}</div>
             )}
           </div>
 

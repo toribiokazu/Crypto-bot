@@ -6,10 +6,12 @@ import {
   Github, Linkedin, Sun, Moon, ChevronLeft, ChevronRight, ExternalLink,
 } from "lucide-react";
 import {
-  SiN8N, SiZapier, SiAirtable, SiOpenai, SiWordpress, SiCanva,
-  SiGoogleanalytics, SiAsana, SiXero, SiSlack,
+  SiN8N, SiZapier, SiAirtable, SiWordpress,
+  SiGoogleanalytics, SiAsana, SiXero,
   SiMailchimp, SiNotion, SiGooglesheets, SiMake,
 } from "react-icons/si";
+import { SiOpenai, SiCanva, SiSlack } from "@/components/BrandIcons";
+
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import PortfolioChat from "@/components/PortfolioChat";
 import CalendlyEmbed from "@/components/CalendlyEmbed";
+import { openCalendlyPopup } from "@/lib/calendly";
 
 
 
@@ -461,9 +462,9 @@ function Portfolio() {
               I help businesses automate operations, streamline CRM workflows, and scale marketing systems using AI, n8n, Make, Zapier, and GoHighLevel.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href="https://calendly.com/toribiokazu/discovery-call" target="_blank" rel="noreferrer" onMouseDown={addRipple} className="ripple hover-lift inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition" style={{ boxShadow: "var(--shadow-glow)" }}>
+              <button type="button" onClick={openCalendlyPopup} onMouseDown={addRipple} className="ripple hover-lift inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition" style={{ boxShadow: "var(--shadow-glow)" }}>
                 Book a discovery call <ArrowRight className="h-4 w-4" />
-              </a>
+              </button>
               <a href="#works" onMouseDown={addRipple} className="ripple hover-lift inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 font-semibold hover:border-primary/50 transition">
                 View my work
               </a>
@@ -620,9 +621,9 @@ function Portfolio() {
               <ContactRow icon={Phone} label="Phone" value="+63 956 897 1143" href="tel:+639568971143" />
               <ContactRow icon={MapPin} label="Location" value="Naic, Cavite, Philippines" />
             </div>
-            <a href="https://calendly.com/toribiokazu/discovery-call" target="_blank" rel="noreferrer" onMouseDown={addRipple} className="ripple mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition" style={{ boxShadow: "var(--shadow-glow)" }}>
+            <button type="button" onClick={openCalendlyPopup} onMouseDown={addRipple} className="ripple mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90 transition" style={{ boxShadow: "var(--shadow-glow)" }}>
               Book a discovery call <ArrowRight className="h-4 w-4" />
-            </a>
+            </button>
           </div>
 
           <CalendlyEmbed />

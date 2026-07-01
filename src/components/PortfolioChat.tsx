@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { MessageCircle, Send, X, Calendar } from "lucide-react";
 import Avatar3D from "@/components/Avatar3D";
+import { openCalendlyPopup } from "@/lib/calendly";
 
 type Suggestion = { label: string; prompt: string };
 
@@ -197,14 +198,13 @@ export default function PortfolioChat() {
                 </div>
                 <div className="text-xs text-muted-foreground pt-1">Try one of these:</div>
                 {renderSuggestions()}
-                <a
-                  href="https://calendly.com/toribiokazu/discovery-call"
-                  target="_blank"
-                  rel="noreferrer"
+                <button
+                  type="button"
+                  onClick={openCalendlyPopup}
                   className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:opacity-90 transition"
                 >
                   <Calendar className="h-3.5 w-3.5" /> Book a discovery call
-                </a>
+                </button>
               </div>
             )}
 
@@ -248,14 +248,13 @@ export default function PortfolioChat() {
           {/* Quick action */}
           {messages.length > 0 && (
             <div className="px-4 pb-2">
-              <a
-                href="https://calendly.com/toribiokazu/discovery-call"
-                target="_blank"
-                rel="noreferrer"
+              <button
+                type="button"
+                onClick={openCalendlyPopup}
                 className="inline-flex items-center gap-1.5 text-xs rounded-full border border-primary/40 bg-primary/10 text-primary px-3 py-1 hover:bg-primary/20 transition"
               >
                 <Calendar className="h-3 w-3" /> Book a discovery call
-              </a>
+              </button>
             </div>
           )}
 

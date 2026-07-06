@@ -1,0 +1,33 @@
+# Kazu Toribio
+
+> Kazu Toribio is an AI Automation Innovation Specialist and Technical Virtual Assistant based in Naic, Cavite, Philippines, with 5+ years of experience building automated workflows, CRM systems, and marketing automation for businesses.
+
+## Services
+
+- AI Automation (n8n, Make, Zapier, OpenAI)
+- Sales & Marketing assistance
+- CRM Management (Zoho, GoHighLevel, Brivity, KW Command)
+- Web & Landing Pages (WordPress)
+- Content & Design (Canva, Adobe)
+- Process & SOPs
+
+## Selected projects
+
+- AI Lead Routing Workflow (n8n + GoHighLevel + Groq AI): https://github.com/toribiokazu/ai-lead-routing-ghl
+- Xero → Asana Transaction Export (Make.com): https://github.com/toribiokazu/xero-asana-transaction-export-automation
+- Email Nurture System (Mailchimp + Airtable): https://github.com/toribiokazu/email-nurture-system
+- WordPress Product Site (WordPress + SEO + GoHighLevel)
+- CRM Migration & Cleanup (Zoho → GoHighLevel, 10,000+ contacts)
+- AI Content Pipeline (ChatGPT + n8n + Airtable + Slack + WordPress): https://github.com/toribiokazu/ai-content-pipeline
+
+## Skills
+
+n8n, Make, Zapier, Airtable, GoHighLevel, ChatGPT, OpenAI, Zoho CRM, Brivity, KW Command, WordPress, Canva, Adobe Photoshop, After Effects, Google Analytics, DocuSign, Calendly, RingCentral.
+
+## Contact
+
+- Email: toribiokazu@gmail.com
+- Phone: +63 956 897 1143
+- Discovery call: https://calendly.com/toribiokazu/discovery-call
+- LinkedIn: https://www.linkedin.com/in/kazu-toribio-b06654203/
+- GitHub: https://github.com/toribiokazu

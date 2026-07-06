@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://toribiokazu.vercel.app/sitemap.xml

@@ -15,9 +15,15 @@ import { SiOpenai, SiCanva, SiSlack } from "@/components/BrandIcons";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  Accordion, AccordionItem, AccordionTrigger, AccordionContent,
+} from "@/components/ui/accordion";
 import PortfolioChat from "@/components/PortfolioChat";
 import CalendlyEmbed from "@/components/CalendlyEmbed";
 import { openCalendlyPopup } from "@/lib/calendly";
+import { works } from "@/lib/works";
+import { useTheme } from "@/lib/useTheme";
+import { Link } from "@tanstack/react-router";
 
 
 
@@ -30,10 +36,10 @@ export const Route = createFileRoute("/")({
     },
   ],
     meta: [
-      { title: "Kazu Toribio - AI Automation Innovation Specialist" },
+      { title: "Kazu Toribio — AI Automation Specialist | n8n, Make & GoHighLevel Expert" },
       {
         name: "description",
-        content: "Portfolio of Kazu Toribio: AI Automation Innovation Specialist with 5+ years building workflows, CRM systems, and marketing automation."
+        content: "Kazu Toribio is an AI automation specialist with 5+ years building n8n, Make, and Zapier workflows, GoHighLevel/Zoho CRM systems, and marketing automation for businesses."
       },
       {
         name: "keywords",
@@ -41,7 +47,7 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:title",
-        content: "Kazu Toribio - AI Automation Innovation Specialist"
+        content: "Kazu Toribio — AI Automation Specialist | n8n, Make & GoHighLevel Expert"
       },
       {
         property: "og:description",
@@ -86,59 +92,39 @@ const experience = [
   },
 ];
 
-const works: {
-  title: string;
-  tag: string;
-  desc: string;
-  image?: string;
-  url?: string;
-}[] = [
-  {
-    title: "AI Lead Routing Workflow",
-    tag: "n8n · GoHighLevel · Groq AI",
-    desc: "Webhook-driven n8n workflow that qualifies inbound GHL leads with AI, tags them hot/warm/cold, creates opportunities and tasks, and pings Slack — cutting response time by 80%.",
-    image: "/ai-lead-routing.png",
-    url: "https://github.com/toribiokazu/ai-lead-routing-ghl",
-  },
-  {
-    title: "Xero → Asana Transaction Export",
-    tag: "Make.com · Xero · Asana · Google Sheets",
-    desc: "Make.com scenario that exports Xero account transactions to a CSV via Google Sheets and uploads it back to the originating Asana task as an attachment when marked complete.",
-    image: "/xero-asana.png",
-    url: "https://github.com/toribiokazu/xero-asana-transaction-export-automation",
-  },
-  { 
-   title: "Email Nurture System",
-   tag: "Mailchimp · Airtable",
-   desc: "Built an automated email nurture system using n8n, Mailchimp, and Airtable to manage subscribers, organize campaigns, eliminate duplicate enrollments, and streamline marketing workflows.",
-   image:"/mailchimp-airtable.png",
-   url: "https://github.com/toribiokazu/email-nurture-system",
-  },
-  { 
-    title: "WordPress Product Site", 
-    tag: "WordPress · SEO", 
-    desc: "Redesigned a WordPress website with optimized landing pages and automated GoHighLevel CRM integration for efficient lead capture and sales automation.",
-    image: "/Wordpress-GHL.png",
-  },
-  { title: "CRM Migration & Cleanup", 
-   tag: "Zoho · GoHighLevel", 
-   desc: "Migrated 10,000+ contacts from Zoho to GoHighLevel, cleaned and standardized CRM data, restructured sales pipelines, and implemented improved workflows for a more efficient sales process.",
-   image: "/zoho-ghl.png",
-  },
-  { title: "AI Content Pipeline", 
-   tag: "ChatGPT · Make", 
-   desc: "An AI-driven content pipeline built with ChatGPT, n8n, Airtable, Slack, and WordPress that automates content generation, review, approval, and publishing through a structured human-in-the-loop workflow.",
-   image: "/ai-content-pipeline.png",
-   url: "https://github.com/toribiokazu/ai-content-pipeline",
-  },
-];
-
 const testimonials = [
   { name: "Marco", quote: "Kazu is spectacular in every way. He is polite and attentive, eager to jump on tasks, and an asset in all aspects of our team." },
   { name: "Jenna", quote: "Working with Kazu has significantly improved our workflow efficiency. His expertise in automation, lead management, and digital marketing has saved us countless hours." },
   { name: "Daniel", quote: "Reliable, resourceful, and highly skilled in managing websites, CRM systems, and marketing campaigns. He always exceeds expectations." },
   { name: "Priya", quote: "Kazu helped transform our manual workflows into automated systems, improving accuracy and saving valuable time across our organization." },
   { name: "Liam", quote: "Professional, detail-oriented, and results-driven. Kazu consistently delivers quality work with excellent communication." },
+];
+
+const faqs = [
+  {
+    q: "What does an AI automation specialist do?",
+    a: "An AI automation specialist designs and builds automated workflows that connect your apps and CRM together, so tasks like lead follow-up, data entry, and reporting happen without manual work. Kazu does this using tools like n8n, Make, Zapier, and OpenAI.",
+  },
+  {
+    q: "How much does an automation or CRM project cost?",
+    a: "It depends on the scope — a single workflow automation is a smaller project than a full CRM migration or a multi-step lead-routing system. The best way to get an accurate quote is to book a discovery call and walk through what you need.",
+  },
+  {
+    q: "n8n vs Make vs Zapier — which should my business use?",
+    a: "Zapier is the easiest to start with for simple app-to-app automations. Make is a good middle ground with more visual control over complex logic. n8n is the most flexible and cost-effective for high-volume or custom workflows, but has a steeper learning curve. Kazu works across all three and can recommend the right fit for your stack and budget.",
+  },
+  {
+    q: "Is Kazu available to work with businesses in different time zones?",
+    a: "Yes. Kazu is based in Naic, Cavite, Philippines and works remotely with clients across different time zones. Book a discovery call to find a time that works for you.",
+  },
+  {
+    q: "What CRMs does Kazu work with?",
+    a: "Zoho CRM, GoHighLevel, Brivity, and KW Command are the CRMs Kazu manages most, including migrations, pipeline restructuring, and day-to-day cleanup.",
+  },
+  {
+    q: "Can Kazu help with a WordPress website?",
+    a: "Yes — Kazu designs and manages WordPress sites and landing pages, including CRM integration for lead capture, as shown in his WordPress Product Site project.",
+  },
 ];
 
 const skills = [
@@ -292,23 +278,6 @@ function Logo() {
   );
 }
 
-function useTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  useEffect(() => {
-    const stored = (typeof localStorage !== "undefined" && localStorage.getItem("theme")) as "light" | "dark" | null;
-    const initial = stored ?? "light";
-    setTheme(initial);
-    document.documentElement.classList.toggle("dark", initial === "dark");
-  }, []);
-  const toggle = () => {
-    const next = theme === "light" ? "dark" : "light";
-    setTheme(next);
-    document.documentElement.classList.toggle("dark", next === "dark");
-    localStorage.setItem("theme", next);
-  };
-  return { theme, toggle };
-}
-
 function ThemeToggle() {
   const { theme, toggle } = useTheme();
   return (
@@ -418,11 +387,62 @@ function StatCard({ k, v, index }: { k: string; v: string; index: number }) {
   );
 }
 
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://toribiokazu.vercel.app/#person",
+      name: "Kazu Toribio",
+      jobTitle: "AI Automation Innovation Specialist",
+      description:
+        "Kazu Toribio is an AI Automation Innovation Specialist and Technical Virtual Assistant based in Naic, Cavite, Philippines, with 5+ years of experience building automated workflows, CRM systems, and marketing automation for businesses using n8n, Make, Zapier, and GoHighLevel.",
+      url: "https://toribiokazu.vercel.app/",
+      image: "https://toribiokazu.vercel.app/kazu-hero.png",
+      email: "mailto:toribiokazu@gmail.com",
+      telephone: "+63-956-897-1143",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Naic, Cavite",
+        addressCountry: "PH",
+      },
+      sameAs: [
+        "https://www.linkedin.com/in/kazu-toribio-b06654203/",
+        "https://github.com/toribiokazu",
+      ],
+      knowsAbout: [
+        "n8n", "Make", "Zapier", "Airtable", "GoHighLevel", "OpenAI",
+        "Zoho CRM", "WordPress", "CRM Automation", "Marketing Automation",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://toribiokazu.vercel.app/#website",
+      name: "Kazu Toribio",
+      url: "https://toribiokazu.vercel.app/",
+      author: { "@id": "https://toribiokazu.vercel.app/#person" },
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://toribiokazu.vercel.app/#service",
+      name: "Kazu Toribio — AI Automation & CRM Services",
+      provider: { "@id": "https://toribiokazu.vercel.app/#person" },
+      areaServed: "Worldwide",
+      url: "https://toribiokazu.vercel.app/",
+      serviceType: [
+        "AI Automation", "Sales & Marketing Assistance", "CRM Management",
+        "Web & Landing Pages", "Content & Design", "Process & SOPs",
+      ],
+    },
+  ],
+};
+
 function Portfolio() {
   useReveal();
   const [heroFlipped, setHeroFlipped] = useState(false);
   return (
     <div id="top" className="min-h-screen bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -432,10 +452,12 @@ function Portfolio() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Logo />
           <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
+            <a href="#about" className="nav-link hover:text-foreground transition-colors">About</a>
             <a href="#services" className="nav-link hover:text-foreground transition-colors">Services</a>
             <a href="#experience" className="nav-link hover:text-foreground transition-colors">Experience</a>
             <a href="#works" className="nav-link hover:text-foreground transition-colors">Works</a>
             <a href="#testimonials" className="nav-link hover:text-foreground transition-colors">Testimonials</a>
+            <a href="#faq" className="nav-link hover:text-foreground transition-colors">FAQ</a>
             <a href="#contact" className="nav-link hover:text-foreground transition-colors">Contact</a>
           </nav>
           <div className="flex items-center gap-2">
@@ -493,15 +515,19 @@ function Portfolio() {
               aria-label="Toggle hero photo pose"
               >
               <img
-               src="/kazu-hero.png"
+               src="/kazu-hero.webp"
                alt="Kazu Toribio"
+               width={1024}
+               height={1536}
                className={`w-[420px] md:w-[500px] h-auto rounded-[1.6rem] object-cover block transition-opacity duration-500 ease-out group-hover:opacity-0 motion-reduce:transition-none ${heroFlipped ? "opacity-0" : ""}`}
               />
               <img
-               src="/kazu-hero-arms-crossed.png"
+               src="/kazu-hero-arms-crossed.webp"
                alt=""
                aria-hidden="true"
                loading="eager"
+               width={480}
+               height={720}
                className={`absolute inset-0 w-full h-full rounded-[1.6rem] object-cover pointer-events-none opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100 motion-reduce:transition-none ${heroFlipped ? "opacity-100" : ""}`}
               />
              </div>
@@ -531,7 +557,13 @@ function Portfolio() {
       {/* TOOLS MARQUEE */}
       <ToolsMarquee />
 
-
+      {/* ABOUT */}
+      <section id="about" className="mx-auto max-w-6xl px-6 py-24">
+        <SectionHeader eyebrow="About" title="Who is Kazu Toribio?" />
+        <p className="reveal mt-8 max-w-3xl text-lg leading-relaxed text-muted-foreground">
+          Kazu Toribio is an AI Automation Innovation Specialist and Technical Virtual Assistant based in Naic, Cavite, Philippines. With 5+ years of experience supporting US and international businesses, he builds AI-driven workflows, manages CRM systems, and runs marketing automation using tools like n8n, Make, Zapier, GoHighLevel, Zoho CRM, and WordPress. He holds a Google Analytics Advanced Certificate and has been recognized as a Best in Web Designing Awardee.
+        </p>
+      </section>
 
       {/* SERVICES */}
       <section id="services" className="mx-auto max-w-6xl px-6 py-24">
@@ -604,6 +636,35 @@ function Portfolio() {
             <Award className="h-4 w-4 text-primary" />
             Google Analytics Advanced Certified · Best in Web Designing Awardee
           </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="mx-auto max-w-6xl px-6 py-24">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: faqs.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            }),
+          }}
+        />
+        <SectionHeader eyebrow="FAQ" title="Frequently asked questions" />
+        <div className="reveal mt-10 max-w-3xl mx-auto">
+          <Accordion type="single" collapsible>
+            {faqs.map((f, i) => (
+              <AccordionItem key={f.q} value={`faq-${i}`}>
+                <AccordionTrigger>{f.q}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed">{f.a}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
 
@@ -724,9 +785,14 @@ function WorksSection() {
               <div className="text-xs font-medium text-primary">{w.tag}</div>
               <h3 className="mt-2 text-lg font-semibold">{w.title}</h3>
               <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{w.desc}</p>
-              <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
-                View details <ArrowRight className="h-3 w-3" />
-              </div>
+              <Link
+                to="/projects/$slug"
+                params={{ slug: w.slug }}
+                onClick={(e) => e.stopPropagation()}
+                className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+              >
+                Read full case study <ArrowRight className="h-3 w-3" />
+              </Link>
             </div>
           </article>
         ))}
@@ -757,19 +823,26 @@ function WorksSection() {
                     {active.desc}
                   </DialogDescription>
                 </DialogHeader>
-                {active.url && (
-                  <div className="mt-6 flex flex-wrap gap-3">
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link
+                    to="/projects/$slug"
+                    params={{ slug: active.slug }}
+                    className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition"
+                  >
+                    Read full case study <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                  {active.url && (
                     <a
                       href={active.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition"
+                      className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-sm font-semibold hover:border-primary/50 transition"
                     >
                       <Github className="h-4 w-4" /> View on GitHub
                       <ExternalLink className="h-3.5 w-3.5" />
                     </a>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </>
           )}

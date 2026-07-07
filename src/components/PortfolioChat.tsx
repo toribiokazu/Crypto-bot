@@ -127,8 +127,17 @@ export default function PortfolioChat() {
     if (m.role === "user") {
       return <span className="whitespace-pre-wrap">{text}</span>;
     }
-    const showBookButton = text.includes(BOOK_CALL_MARKER);
-    const cleanText = text.split(BOOK_CALL_MARKER).join("").trim();
+    // The model can't be trusted to get a URL right (it has hallucinated wrong
+    // domains for the booking link), so treat any URL-shaped text — not just
+    // the marker — as a cue to show the button, and never render a URL the
+    // model produced. The button always opens the real, hardcoded Calendly link.
+    const hasStrayUrl = /https?:\/\//i.test(text);
+    const showBookButton = text.includes(BOOK_CALL_MARKER) || hasStrayUrl;
+    const cleanText = text
+      .replace(/\[([^\]]*)\]\(https?:\/\/[^)]+\)/gi, "")
+      .replace(/https?:\/\/[^\s)\]]+/gi, "")
+      .split(BOOK_CALL_MARKER).join("")
+      .trim();
     return (
       <div className="max-w-none leading-relaxed">
         <ReactMarkdown

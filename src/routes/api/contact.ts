@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
 const ContactSchema = z.object({
-  name: z.string().trim().min(1).max(100),
+  // Strip newlines so `name` can't inject extra headers into the outgoing
+  // email subject line.
+  name: z.string().trim().min(1).max(100).transform((s) => s.replace(/[\r\n]+/g, " ")),
   email: z.string().trim().email().max(255),
   message: z.string().trim().min(1).max(2000),
 });

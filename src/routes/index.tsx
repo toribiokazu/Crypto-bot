@@ -23,6 +23,7 @@ import CalendlyEmbed from "@/components/CalendlyEmbed";
 import { openCalendlyPopup } from "@/lib/calendly";
 import { works } from "@/lib/works";
 import { useTheme } from "@/lib/useTheme";
+import { jsonLdScript } from "@/lib/jsonld";
 import { Link } from "@tanstack/react-router";
 
 
@@ -442,7 +443,7 @@ function Portfolio() {
   const [heroFlipped, setHeroFlipped] = useState(false);
   return (
     <div id="top" className="min-h-screen bg-background text-foreground">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(JSON_LD) }} />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -644,7 +645,7 @@ function Portfolio() {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: jsonLdScript({
               "@context": "https://schema.org",
               "@type": "FAQPage",
               mainEntity: faqs.map((f) => ({

@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Github, ExternalLink } from "lucide-react";
 import { works } from "@/lib/works";
 import { useTheme } from "@/lib/useTheme";
+import { jsonLdScript } from "@/lib/jsonld";
 
 export const Route = createFileRoute("/projects/$slug")({
   loader: ({ params }) => {
@@ -46,7 +47,7 @@ function ProjectPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }} />
 
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border">
         <div className="mx-auto flex max-w-3xl items-center px-6 py-4">

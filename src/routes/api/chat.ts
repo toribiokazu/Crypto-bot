@@ -67,6 +67,21 @@ export const Route = createFileRoute("/api/chat")({
           if (!Array.isArray(messages)) {
             return new Response("Messages are required", { status: 400 });
           }
+          if (messages.length > 60) {
+            return new Response("Too many messages", { status: 413 });
+          }
+          const totalTextLength = messages.reduce((sum, m) => {
+            if (!Array.isArray(m?.parts)) return sum;
+            return (
+              sum +
+              m.parts.reduce((partSum: number, p: { type?: string; text?: string }) => {
+                return partSum + (p?.type === "text" && typeof p.text === "string" ? p.text.length : 0);
+              }, 0)
+            );
+          }, 0);
+          if (totalTextLength > 20000) {
+            return new Response("Message payload too large", { status: 413 });
+          }
 
           // Server-only secret. Never expose via VITE_*. Read inside handler
           // so Vercel/Workers per-request env injection works.

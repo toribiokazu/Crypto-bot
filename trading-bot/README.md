@@ -79,6 +79,17 @@ The bot is **demo-first**: `run_live.py --mode demo` refuses to start unless
 **Bybit demo:** create demo API keys at testnet.bybit.com and set
 `exchange_id: bybit` in `config.yaml`.
 
+**MEXC (and other ccxt exchanges):** supported for live/paper trading via
+`exchange_id: mexc`, and its low spot fees (advertised 0% maker / 0.05%
+taker — verify on their fee page) are genuinely attractive: fees are this
+system's biggest cost. **But MEXC has no testnet**, so the demo phase can't
+happen there. Sensible path: validate on the Binance testnet (the algorithm
+is identical), optionally paper-trade against live MEXC prices
+(`--mode paper` needs no keys), and only consider MEXC for the eventual
+real-money stage — weighing that its regulatory standing and alt-pair
+liquidity are a step below the top-tier venues. If you go that way, set
+`fee_pct: 0.05` so the simulations model reality.
+
 The bot logs every decision to `bot.log` and keeps its state (equity, open
 positions, kill-switch status) in `state.json`.
 

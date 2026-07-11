@@ -168,7 +168,12 @@ class CcxtBroker:
         amount = float(self.ex.amount_to_precision(symbol, qty))
         if amount <= 0:
             return None
-        order = self.ex.create_market_buy_order(symbol, amount)
+        # Some exchanges (MEXC among them) take market BUY size in quote
+        # currency; ccxt flags this and provides the cost-based call.
+        if self.ex.options.get("createMarketBuyOrderRequiresPrice", False):
+            order = self.ex.create_market_buy_order_with_cost(symbol, amount * price)
+        else:
+            order = self.ex.create_market_buy_order(symbol, amount)
         fill_price = float(order.get("average") or order.get("price") or price)
         pos = Position(
             id=str(order["id"]),

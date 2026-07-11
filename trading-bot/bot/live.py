@@ -13,6 +13,7 @@ Modes:
 
 from __future__ import annotations
 
+import csv
 import json
 import logging
 import time
@@ -44,6 +45,7 @@ class LiveTrader:
         self.mode = mode
         self.symbols = cfg.exchange.symbol_list
         self.state_path = Path(state_path)
+        self.journal_path = Path(f"trades_{mode}.csv")
         self.strategy = PriceActionStrategy(cfg.strategy)
         self.risk = RiskManager(cfg.risk)
         self.last_marks: dict[str, float] = {}
@@ -100,6 +102,33 @@ class LiveTrader:
             )
         )
 
+    # --------------------------------------------------------------- journal
+    JOURNAL_COLUMNS = [
+        "closed_at_utc", "mode", "symbol", "direction", "qty", "entry", "exit",
+        "pnl", "r_multiple", "exit_reason", "entry_reason", "opened_at",
+    ]
+
+    def _journal(self, pos, fill, exit_reason: str) -> None:
+        """Append the completed trade to the CSV journal — this file is the
+        raw material for the weekly performance review."""
+        if pos.direction > 0:
+            pnl = (fill.price - pos.entry) * fill.qty - fill.fee
+        else:
+            pnl = (pos.entry - fill.price) * fill.qty - fill.fee
+        pnl += pos.realized_pnl
+        r = pnl / pos.risk_amount if pos.risk_amount > 0 else 0.0
+        new_file = not self.journal_path.exists()
+        with self.journal_path.open("a", newline="") as f:
+            w = csv.writer(f)
+            if new_file:
+                w.writerow(self.JOURNAL_COLUMNS)
+            w.writerow([
+                datetime.now(timezone.utc).isoformat(), self.mode, pos.symbol,
+                "long" if pos.direction > 0 else "short",
+                f"{fill.qty:.8f}", f"{pos.entry:.8f}", f"{fill.price:.8f}",
+                f"{pnl:.4f}", f"{r:.3f}", exit_reason, pos.reason, pos.opened_at,
+            ])
+
     # ------------------------------------------------------------------ data
     def _fetch(self, symbol: str) -> pd.DataFrame:
         ex = self.cfg.exchange
@@ -145,8 +174,9 @@ class LiveTrader:
                     pos.direction < 0 and bar_high >= pos.stop
                 )
                 if hit:
-                    self.broker.close_position(pos.id, price)
+                    fill = self.broker.close_position(pos.id, price)
                     self.risk.release_position(pos.id)
+                    self._journal(pos, fill, "stop")
                     log.info("Stop hit -> closed %s %s", symbol, pos.id)
                     continue
 
@@ -175,8 +205,9 @@ class LiveTrader:
                     target = pos.entry + pos.direction * scfg.target_r * r_dist
                     reached = favourable >= target if pos.direction > 0 else favourable <= target
                     if reached:
-                        self.broker.close_position(pos.id, price)
+                        fill = self.broker.close_position(pos.id, price)
                         self.risk.release_position(pos.id)
+                        self._journal(pos, fill, "target")
                         log.info("Runner target +%.1fR hit -> closed %s %s", scfg.target_r, symbol, pos.id)
                         continue
 

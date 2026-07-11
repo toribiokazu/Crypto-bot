@@ -111,6 +111,28 @@ proving the system works live with capped risk, not about income. If the
 demo (and later a small real run) stays green for months, the same
 percentages scale with the budget.
 
+## Weekly review workflow
+
+The live loop journals every completed trade to `trades_demo.csv` /
+`trades_paper.csv` (entry, exit, PnL, R-multiple, exit reason, signal that
+triggered it). Weekly routine:
+
+```bash
+python run_report.py         # local summary + mechanical warnings + verdict
+git add trades_*.csv && git commit -m "journal week N" && git push
+```
+
+Pushing the journal lets the maintainer (or Claude) analyze the data and
+tune the algorithm. Two rules the review follows:
+
+1. **Mechanical issues get fixed at any sample size** — stops slipping past
+   -1.25R, losses averaging worse than -1R, trade frequency far off
+   projection. These mean the execution doesn't match the model.
+2. **Strategy parameters are only retuned on 30+ trades of evidence.**
+   Re-fitting the algorithm to one week (~3 trades) of results is
+   curve-fitting to noise and makes bots worse, not better. The report's
+   verdict enforces this distinction explicitly.
+
 ## Recommended evaluation process
 
 1. **Backtest** on 2–3 years of real 4h candles (`--fetch --limit 5000`).

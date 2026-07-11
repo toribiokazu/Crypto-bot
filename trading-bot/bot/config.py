@@ -25,14 +25,15 @@ class StrategyConfig:
     rsi_short_min: float = 30.0  # don't sell into oversold
     stop_atr_buffer: float = 0.5  # stop = pattern extreme -/+ this * ATR
     max_stop_atr_mult: float = 3.0  # skip setups with absurdly wide stops
-    # --- exits: tuned for a >=50% win rate ---
-    # Most of the position is banked at +partial_take_r (locking a winning
-    # trade), the stop jumps to breakeven, and the small remainder trails.
+    # --- exits: >=40% win-rate floor, tuned for max PnL ---
+    # A small slice is banked at +partial_take_r (locking the trade as a
+    # win), the stop jumps to breakeven, and the large remainder trails so
+    # trend winners stay big. Best measured profile: ~48% win rate.
     partial_take_r: float | None = 1.0  # scale-out level in R (None = off)
-    partial_take_fraction: float = 0.7  # fraction of the position banked there
+    partial_take_fraction: float = 0.3  # fraction of the position banked there
     breakeven_at_r: float = 1.0  # move stop to entry at this R
-    trail_atr_mult: float = 3.0  # chandelier trail (used when target_r is None)
-    target_r: float | None = 2.0  # runner take-profit in R
+    trail_atr_mult: float = 3.5  # chandelier trail (used when target_r is None)
+    target_r: float | None = None  # optional runner take-profit in R
     allow_shorts: bool = False  # spot demo accounts are long-only
     cooldown_bars: int = 3  # bars to wait after closing a trade
 

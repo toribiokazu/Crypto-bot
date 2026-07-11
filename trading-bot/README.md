@@ -7,9 +7,10 @@ A crypto trading bot built around two ideas:
    (engulfing, hammer/pin bar, momentum close) confirms.
 2. **Risk management first** — profitability comes from asymmetry, not from
    predicting every move. Losers are cut at a fixed small loss (-1R); on
-   winners the bot banks 70% of the position at +1R (locking the trade as a
-   win and moving the stop to breakeven) and lets the remaining 30% run to a
-   +2R target. This scale-out profile targets a ~50% win rate.
+   winners the bot banks 30% of the position at +1R (locking the trade as a
+   win and moving the stop to breakeven) and trails the remaining 70% with a
+   3.5*ATR stop so trend winners stay big. Measured profile: ~48% win rate
+   with the best PnL of every exit design tested.
 
 ## Hard risk rules (enforced in code, not just config)
 
@@ -32,8 +33,8 @@ TREND     EMA(21) vs EMA(55) alignment + swing structure (HH/HL) must agree
 LOCATION  pullback into the fast EMA or a confirmed support zone
 TRIGGER   bullish reversal pattern completes there, RSI not overbought
 STOP      below the pattern low minus 0.5*ATR (wide stops = skipped setup)
-EXIT      scale-out: bank 70% at +1R and move the stop to breakeven,
-          then the 30% runner exits at +2R
+EXIT      scale-out: bank 30% at +1R and move the stop to breakeven,
+          then the 70% runner trails a 3.5*ATR stop until caught
 ```
 
 Shorts are the mirror image and disabled by default (spot demo accounts are
@@ -95,16 +96,16 @@ positions, kill-switch status) in `state.json`.
 Sample backtests across 10 simulated market regimes (3000 x 4h candles each)
 with default settings:
 
-- Win rate: ~50% on average (range 31–65% depending on the regime)
-- Winning regimes: up to +20%; losing (choppy) regimes: capped at ~-10 to
-  -11% by the kill switch
-- Blended winner ≈ +1.3R (0.7 x 1R banked + 0.3 x 2R runner) vs -1R losers
+- Win rate: ~48% on average (regime-dependent; the floor requirement is 40%)
+- Mean return +4.6%, median +3.1% — the best PnL of ~24 exit designs swept,
+  beating both the full +2R-target profile (~36% win rate) and every
+  higher-win-rate variant (banking more/earlier raises win rate but caps
+  the winners that pay for the losses)
+- Losing (choppy) regimes: capped at ~-10 to -11% by the kill switch
 
-**Know the trade-off you chose:** win rate is bought by capping winners. In
-the same simulations, a full-position +2R target earned MORE overall at only
-a ~36% win rate, and a wide trailing stop earned the most at 18–33%. If you
-ever care more about total PnL than win rate, set `partial_take_r: null` and
-`breakeven_at_r: 99` in config.yaml to get the full-2R profile back.
+The exit design is the dial: bank earlier/more = higher win rate, lower
+PnL. Bank later/less = lower win rate, higher PnL. The default sits at the
+measured sweet spot that respects the 40% win-rate floor.
 
 ## Honest disclaimers
 

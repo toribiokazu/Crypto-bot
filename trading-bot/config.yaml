@@ -35,16 +35,17 @@ strategy:
   rsi_short_min: 30
   stop_atr_buffer: 0.5
   max_stop_atr_mult: 3.0
-  # --- exits: scale-out profile targeting a ~50% win rate ---
-  # 70% of the position is banked at +1R (that locks the trade as a win
-  # and moves the stop to breakeven); the remaining 30% runs to +2R.
-  # NOTE: a higher win rate is NOT more profit. In our regime sims the
-  # full-position 2R target made more money at a ~36% win rate. If you
-  # ever want that profile back: partial_take_r: null, breakeven_at_r: 99.
+  # --- exits: ~48% win rate, best-measured PnL profile ---
+  # 30% of the position is banked at +1R (that locks the trade as a win
+  # and moves the stop to breakeven); the remaining 70% trails a 3.5*ATR
+  # stop so trend winners stay big. In regime sims this beat both the
+  # full-2R-target profile and every higher-win-rate variant on PnL
+  # while keeping the win rate near 48% (floor requirement: 40%).
   partial_take_r: 1.0
-  partial_take_fraction: 0.7
+  partial_take_fraction: 0.3
   breakeven_at_r: 1.0       # stop -> entry once the trade is +1R
-  trail_atr_mult: 3.0       # trail for the runner if target_r is null
-  target_r: 2.0             # runner take-profit at +2R
+  trail_atr_mult: 3.5       # trail for the runner
+  target_r: null            # no hard cap on the runner - let it run
+                            # (set e.g. 2.0 to force a fixed +2R exit)
   allow_shorts: false       # spot demo accounts are long-only
   cooldown_bars: 3

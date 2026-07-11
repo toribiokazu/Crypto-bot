@@ -13,6 +13,12 @@ Hard rules enforced here (they cannot be configured above their ceilings):
    until a human resets it. Losing 10% of the budget is the worst case
    by construction.
 4. NO LEVERAGE — position notional is additionally capped by available cash.
+5. DAILY LOSS PAUSE — after losing daily_loss_pause_pct of the budget within
+   one UTC day, no new trades until the next day. A bad day cannot snowball
+   into the kill switch.
+6. VOLATILITY TARGETING — when the market's ATR (as % of price) exceeds the
+   target, per-trade risk scales down proportionally, the same way
+   institutional desks size to a volatility budget.
 """
 
 from __future__ import annotations
@@ -37,6 +43,9 @@ class RiskManager:
     open_risks: dict[str, OpenRisk] = field(default_factory=dict)
     halted: bool = False
     halt_reason: str = ""
+    day_start_equity: float | None = None
+    current_day: object = None
+    paused_day: object = None
 
     def __post_init__(self) -> None:
         # Belt and braces: even a hand-edited config cannot lift the ceilings.
@@ -79,6 +88,38 @@ class RiskManager:
         self.halted = False
         self.halt_reason = ""
 
+    def observe(self, equity: float, day) -> None:
+        """Feed every equity mark with its UTC date; drives the daily pause."""
+        if day != self.current_day:
+            self.current_day = day
+            self.day_start_equity = equity
+        if (
+            self.cfg.daily_loss_pause_pct is not None
+            and self.paused_day != day
+            and self.day_start_equity is not None
+        ):
+            day_loss = self.day_start_equity - equity
+            if day_loss >= self.budget * self.cfg.daily_loss_pause_pct / 100.0:
+                self.paused_day = day
+
+    @property
+    def paused_today(self) -> bool:
+        return self.paused_day is not None and self.paused_day == self.current_day
+
+    @property
+    def can_open(self) -> bool:
+        return not self.halted and not self.paused_today
+
+    def vol_scalar(self, atr: float, price: float) -> float:
+        """Risk multiplier in (0, 1]: full size at/below the vol target,
+        proportionally smaller above it."""
+        if self.cfg.vol_target_atr_pct is None or atr <= 0 or price <= 0:
+            return 1.0
+        atr_pct = atr / price * 100.0
+        if atr_pct <= self.cfg.vol_target_atr_pct:
+            return 1.0
+        return self.cfg.vol_target_atr_pct / atr_pct
+
     # ---------------------------------------------------------------- sizing
     def position_size(
         self,
@@ -87,20 +128,29 @@ class RiskManager:
         stop: float,
         equity: float,
         available_cash: float,
+        vol_scalar: float = 1.0,
     ) -> tuple[float, float]:
         """Return (quantity, risk_amount) for a new trade, or (0, 0) if the
         trade must be rejected. Does NOT register the risk — call
         register_position after the order actually fills.
         """
-        if self.halted:
+        if not self.can_open:
             return 0.0, 0.0
         if len(self.open_risks) >= self.cfg.max_open_positions:
             return 0.0, 0.0
         stop_dist = abs(entry - stop)
         if stop_dist <= 0 or entry <= 0:
             return 0.0, 0.0
+        # Cost-aware gate: fees+slippage are paid on the way in AND out; a
+        # stop tighter than a few multiples of that cost is a losing game
+        # no matter how good the signal looks.
+        if self.cfg.min_stop_cost_mult is not None:
+            round_trip = 2.0 * (self.cfg.fee_pct + self.cfg.slippage_pct) / 100.0
+            if stop_dist / entry < self.cfg.min_stop_cost_mult * round_trip:
+                return 0.0, 0.0
 
         risk_amount = self.budget * self.cfg.risk_per_trade_pct / 100.0
+        risk_amount *= max(min(vol_scalar, 1.0), 0.0)
         # Never risk money the account no longer has.
         risk_amount = min(risk_amount, max(equity, 0.0))
         # Respect the 10% total-open-risk cap: shrink into remaining headroom.

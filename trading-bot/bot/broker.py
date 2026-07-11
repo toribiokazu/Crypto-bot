@@ -48,14 +48,16 @@ class PaperBroker:
         self.slip_pct = slippage_pct / 100.0
         self.positions: dict[str, Position] = {}
 
-    # mark-to-market equity
-    def equity(self, price: float) -> float:
+    # mark-to-market equity; price is a float (single symbol) or a
+    # {symbol: last_price} dict for portfolio trading
+    def equity(self, price) -> float:
         eq = self.cash
         for p in self.positions.values():
+            px = price[p.symbol] if isinstance(price, dict) else price
             if p.direction > 0:
-                eq += p.qty * price
+                eq += p.qty * px
             else:
-                eq += p.qty * (2 * p.entry - price)  # short PnL on margin-less sim
+                eq += p.qty * (2 * p.entry - px)  # short PnL on margin-less sim
         return eq
 
     def open_position(
@@ -140,10 +142,11 @@ class CcxtBroker:
         bal = self.ex.fetch_balance()
         return float(bal.get("free", {}).get(quote, 0.0) or 0.0)
 
-    def equity(self, price: float) -> float:
+    def equity(self, price) -> float:
         eq = self.fetch_quote_balance_cached()
         for p in self.positions.values():
-            eq += p.qty * price * (1 if p.direction > 0 else 0)
+            px = price[p.symbol] if isinstance(price, dict) else price
+            eq += p.qty * px * (1 if p.direction > 0 else 0)
         return eq
 
     def fetch_quote_balance_cached(self) -> float:

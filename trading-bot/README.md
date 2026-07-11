@@ -1,6 +1,7 @@
 # Price-Action Crypto Trading Bot
 
-A crypto trading bot built around two ideas:
+A portfolio crypto trading bot (12 pairs, one shared budget) built around
+two ideas:
 
 1. **Price action** — trade with the trend, enter on pullbacks into
    support/EMA value zones, and only when a reversal candlestick pattern
@@ -16,9 +17,12 @@ A crypto trading bot built around two ideas:
 
 | Rule | Value | What it means |
 |------|-------|---------------|
-| Per-trade risk | 1.5% of budget | Position size is derived from the stop distance |
+| Per-trade risk | 0.75% of budget | Position size is derived from the stop distance |
 | Total open risk cap | **10% of budget (hard ceiling)** | New trades are shrunk or rejected once the cap is reached |
 | Kill switch | **-10% drawdown (hard ceiling)** | The bot stops opening trades entirely and requires a manual reset |
+| Daily loss pause | -3% in one UTC day | No new trades until the next day — a bad day can't snowball |
+| Volatility targeting | ATR ≤ 0.6% of price | Position risk scales down proportionally in hot markets |
+| Cost-aware gate | stop ≥ 5x round-trip cost | Setups whose stop is tighter than 5x fees+slippage are rejected |
 | No leverage | always | Notional is capped by available cash |
 
 The two 10% ceilings are hard-coded maximums in `bot/risk.py` — the config
@@ -93,19 +97,26 @@ positions, kill-switch status) in `state.json`.
 
 ## What results to expect
 
-Sample backtests across 10 simulated market regimes (3000 x 4h candles each)
-with default settings:
+Portfolio backtests (12 simulated pairs x 2000 2h candles, 5 independent
+seed-sets) with default settings:
 
-- Win rate: ~48% on average (regime-dependent; the floor requirement is 40%)
-- Mean return +4.6%, median +3.1% — the best PnL of ~24 exit designs swept,
-  beating both the full +2R-target profile (~36% win rate) and every
-  higher-win-rate variant (banking more/earlier raises win rate but caps
-  the winners that pay for the losses)
-- Losing (choppy) regimes: capped at ~-10 to -11% by the kill switch
+- ~1.4 trades/day on average across the portfolio (0.7–1.8 by regime)
+- Win rate ~52% on average
+- Mean return ≈ +1.7% per 30 days; best regimes +16 to +27% over ~6 months
+- Worst regime -10.5%, stopped by the kill switch — the hard floor held
 
-The exit design is the dial: bank earlier/more = higher win rate, lower
-PnL. Bank later/less = lower win rate, higher PnL. The default sits at the
-measured sweet spot that respects the 40% win-rate floor.
+## Why not more trades per day?
+
+We measured it: frequency and profit pull in opposite directions at retail
+fees. On 15m candles the same strategy traded more but lost ~10%/month with
+EVERY run hitting the kill switch, because a 15m stop (~0.5% wide) barely
+exceeds the ~0.3% round-trip cost of fees+slippage. Institutions trade fast
+because they pay maker rebates (≈0 or negative fees); retail accounts pay
+0.1% taker per side, so the viable path to more trades is more pairs on a
+slower chart — that's what the 12-pair portfolio does. If you push
+`timeframe` below 1h anyway, the cost gate will start rejecting most
+setups — that's the math protecting you, not a bug. Fee reductions (BNB
+discount, VIP tiers) directly improve every number above.
 
 ## Honest disclaimers
 

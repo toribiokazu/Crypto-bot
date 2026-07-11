@@ -41,10 +41,17 @@ class StrategyConfig:
 @dataclass
 class RiskConfig:
     allocated_budget: float = 1000.0  # money the bot is allowed to manage
-    risk_per_trade_pct: float = 1.5  # % of budget risked on one trade
+    risk_per_trade_pct: float = 0.75  # % of budget risked on one trade
     max_total_risk_pct: float = 10.0  # hard cap: open risk never exceeds this
     max_drawdown_pct: float = 10.0  # kill switch: halt if equity falls this far
-    max_open_positions: int = 3
+    daily_loss_pause_pct: float | None = 3.0  # pause new trades for the rest
+    # of the UTC day after losing this % of budget intraday (None = off)
+    vol_target_atr_pct: float | None = 0.6  # ATR as % of price at which full
+    # per-trade risk is taken; risk scales DOWN linearly above it (None = off)
+    min_stop_cost_mult: float | None = 5.0  # reject trades whose stop distance
+    # is under this multiple of the round-trip cost (fees+slippage both ways);
+    # tighter stops than this mathematically cannot be profitable (None = off)
+    max_open_positions: int = 6  # one per symbol, at most this many at once
     fee_pct: float = 0.10  # taker fee per side (0.10% = Binance default)
     slippage_pct: float = 0.05
 
@@ -53,10 +60,21 @@ class RiskConfig:
 class ExchangeConfig:
     exchange_id: str = "binance"
     testnet: bool = True  # ALWAYS default to the demo/test environment
-    symbol: str = "BTC/USDT"
-    timeframe: str = "4h"
+    symbol: str = "BTC/USDT"  # used when symbols is empty
+    symbols: list[str] = field(
+        default_factory=lambda: [
+            "BTC/USDT", "ETH/USDT", "SOL/USDT", "BNB/USDT", "XRP/USDT",
+            "ADA/USDT", "DOGE/USDT", "AVAX/USDT", "LINK/USDT", "DOT/USDT",
+            "LTC/USDT", "NEAR/USDT",
+        ]
+    )
+    timeframe: str = "2h"
     api_key_env: str = "EXCHANGE_API_KEY"
     api_secret_env: str = "EXCHANGE_API_SECRET"
+
+    @property
+    def symbol_list(self) -> list[str]:
+        return self.symbols or [self.symbol]
 
 
 @dataclass
@@ -77,6 +95,12 @@ class BotConfig:
             raise ValueError("risk_per_trade_pct cannot exceed max_total_risk_pct")
         if r.allocated_budget <= 0:
             raise ValueError("allocated_budget must be positive")
+        if r.daily_loss_pause_pct is not None and not (
+            0 < r.daily_loss_pause_pct <= r.max_drawdown_pct
+        ):
+            raise ValueError("daily_loss_pause_pct must be in (0, max_drawdown_pct]")
+        if r.vol_target_atr_pct is not None and r.vol_target_atr_pct <= 0:
+            raise ValueError("vol_target_atr_pct must be positive")
         s = self.strategy
         if s.ema_fast >= s.ema_slow:
             raise ValueError("ema_fast must be shorter than ema_slow")

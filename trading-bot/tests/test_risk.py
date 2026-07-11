@@ -86,9 +86,41 @@ def test_ceilings_cannot_be_configured_above_10():
 def test_no_leverage_cap_by_cash():
     rm = make_rm()
     # tiny cash: position must be capped by what the account can afford
-    qty, risk = rm.position_size("p", entry=100.0, stop=99.0, equity=1000.0, available_cash=50.0)
+    qty, risk = rm.position_size("p", entry=100.0, stop=95.0, equity=1000.0, available_cash=50.0)
     assert qty * 100.0 <= 50.0 + 1e-9
-    assert risk == pytest.approx(qty * 1.0)
+    assert risk == pytest.approx(qty * 5.0)
+
+
+def test_cost_gate_rejects_tight_stops():
+    rm = make_rm()  # fee 0.10 + slip 0.05 per side -> 0.3% round trip
+    # 1% stop < 5 x 0.3% -> rejected regardless of signal quality
+    qty, _ = rm.position_size("p", entry=100.0, stop=99.0, equity=1000.0, available_cash=1000.0)
+    assert qty == 0.0
+    # 5% stop passes the gate
+    qty, _ = rm.position_size("p", entry=100.0, stop=95.0, equity=1000.0, available_cash=1000.0)
+    assert qty > 0.0
+
+
+def test_vol_scalar_shrinks_risk_in_hot_markets():
+    rm = make_rm()  # vol_target_atr_pct = 0.6 by default
+    assert rm.vol_scalar(atr=0.5, price=100.0) == pytest.approx(1.0)  # 0.5% <= target
+    assert rm.vol_scalar(atr=1.2, price=100.0) == pytest.approx(0.5)  # 1.2% -> half size
+
+
+def test_daily_loss_pause():
+    rm = make_rm()  # daily_loss_pause_pct = 3.0 by default
+    from datetime import date
+
+    d1, d2 = date(2026, 1, 1), date(2026, 1, 2)
+    rm.observe(1000.0, d1)
+    rm.observe(985.0, d1)  # -1.5% intraday: fine
+    assert rm.can_open
+    rm.observe(969.0, d1)  # -3.1% intraday: paused for the day
+    assert rm.paused_today and not rm.can_open
+    qty, _ = rm.position_size("p", 100.0, 95.0, 969.0, 969.0)
+    assert qty == 0.0
+    rm.observe(969.0, d2)  # new day: trading resumes automatically
+    assert not rm.paused_today and rm.can_open
 
 
 def test_stop_move_to_breakeven_releases_risk():

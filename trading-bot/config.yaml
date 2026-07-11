@@ -7,16 +7,39 @@
 exchange:
   exchange_id: binance      # any ccxt exchange id (binance, bybit, kraken...)
   testnet: true             # keep true until the demo period is over
-  symbol: BTC/USDT
-  timeframe: 4h             # 1h/4h recommended; price action is noisy below
+  symbols:                  # portfolio: one shared budget across all pairs
+    - BTC/USDT
+    - ETH/USDT
+    - SOL/USDT
+    - BNB/USDT
+    - XRP/USDT
+    - ADA/USDT
+    - DOGE/USDT
+    - AVAX/USDT
+    - LINK/USDT
+    - DOT/USDT
+    - LTC/USDT
+    - NEAR/USDT
+  timeframe: 2h             # the measured sweet spot. Faster charts trade
+                            # more but LOSE money at retail fees: in our sims
+                            # 15m was -10%/month with every run kill-switched.
+                            # Frequency comes from breadth (12 pairs), not
+                            # from a faster chart.
 
 risk:
   allocated_budget: 1000    # money the bot manages (demo funds while testing)
-  risk_per_trade_pct: 1.5   # each trade risks 1.5% of budget => ~7 losing
-                            # trades in a row before the kill switch triggers
+  risk_per_trade_pct: 0.75  # smaller per-trade risk at higher frequency:
+                            # ~13 losing trades in a row to hit the kill switch
   max_total_risk_pct: 10    # hard cap on combined open risk (max 10)
   max_drawdown_pct: 10      # kill switch: stop trading at -10% (max 10)
-  max_open_positions: 3
+  daily_loss_pause_pct: 3   # lose 3% of budget in one UTC day -> no new
+                            # trades until tomorrow (a bad day can't snowball)
+  vol_target_atr_pct: 0.6   # institutional-style vol targeting: full risk
+                            # when ATR <= 0.6% of price, scaled down above
+  min_stop_cost_mult: 5     # cost-aware gate: reject setups whose stop is
+                            # tighter than 5x the round-trip fees+slippage
+                            # (this is what makes fast timeframes unprofitable)
+  max_open_positions: 6     # one per symbol, at most this many at once
   fee_pct: 0.10             # taker fee per side
   slippage_pct: 0.05
 

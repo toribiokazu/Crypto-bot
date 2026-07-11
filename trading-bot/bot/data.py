@@ -70,16 +70,19 @@ def synthetic_ohlcv(
     n: int = 3000,
     seed: int = 42,
     start_price: float = 30_000.0,
-    timeframe_hours: int = 4,
+    timeframe_hours: float = 4,
 ) -> pd.DataFrame:
     """Regime-switching synthetic candles (bull trend / bear trend / chop).
 
     Regimes persist for 80–300 bars. Volatility clusters, and each candle's
     high/low wicks are generated so intrabar stop-hit simulation is meaningful.
+    Drift/vol are calibrated for 4h bars and rescaled GBM-style (drift ~ dt,
+    vol ~ sqrt(dt)) for other timeframes.
     """
     rng = np.random.default_rng(seed)
-    drifts = {"bull": 0.0012, "bear": -0.0012, "chop": 0.0}
-    vols = {"bull": 0.012, "bear": 0.016, "chop": 0.008}
+    dt = timeframe_hours / 4.0
+    drifts = {"bull": 0.0012 * dt, "bear": -0.0012 * dt, "chop": 0.0}
+    vols = {k: v * dt**0.5 for k, v in {"bull": 0.012, "bear": 0.016, "chop": 0.008}.items()}
     regimes = list(drifts)
 
     closes = np.empty(n)
@@ -111,7 +114,7 @@ def synthetic_ohlcv(
                 break
         regime = regimes[int(rng.integers(0, len(regimes)))]
 
-    idx = pd.date_range("2023-01-01", periods=n, freq=f"{timeframe_hours}h", tz="UTC")
+    idx = pd.date_range("2023-01-01", periods=n, freq=f"{int(timeframe_hours * 60)}min", tz="UTC")
     return pd.DataFrame(
         {"open": opens, "high": highs, "low": lows, "close": closes, "volume": vols_out},
         index=idx,

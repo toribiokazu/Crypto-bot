@@ -1,8 +1,10 @@
 """Live trading loop for DEMO/testnet (and paper) trading.
 
-The loop mirrors the backtester exactly: it acts only on CLOSED candles,
-manages stops bot-side, and lets the RiskManager veto every entry. Run it
-against a demo account until the equity curve earns your trust.
+The loop mirrors the portfolio backtester: it acts only on CLOSED candles
+across every configured symbol, manages stops bot-side, and lets the shared
+RiskManager (10% cap, 10% kill switch, daily loss pause, vol targeting) veto
+every entry. Run it against a demo account until the equity curve earns your
+trust.
 
 Modes:
   paper — live market data, simulated fills (no keys needed)
@@ -40,9 +42,11 @@ class LiveTrader:
             raise ValueError("mode must be 'paper' or 'demo'")
         self.cfg = cfg
         self.mode = mode
+        self.symbols = cfg.exchange.symbol_list
         self.state_path = Path(state_path)
         self.strategy = PriceActionStrategy(cfg.strategy)
         self.risk = RiskManager(cfg.risk)
+        self.last_marks: dict[str, float] = {}
 
         if mode == "paper":
             self.broker = PaperBroker(
@@ -59,7 +63,7 @@ class LiveTrader:
                     "demo-first — flip it back to true, or edit this guard only "
                     "after the demo period has proven the system."
                 )
-            self.broker.refresh(cfg.exchange.symbol)
+            self.broker.refresh(self.symbols[0])
 
         self._load_state()
 
@@ -81,11 +85,12 @@ class LiveTrader:
                     "equity": equity,
                     "halted": self.risk.halted,
                     "halt_reason": self.risk.halt_reason,
+                    "paused_today": self.risk.paused_today,
                     "open_positions": [
                         {
-                            "id": p.id, "direction": p.direction, "qty": p.qty,
-                            "entry": p.entry, "stop": p.stop, "reason": p.reason,
-                            "partial_done": p.partial_done,
+                            "id": p.id, "symbol": p.symbol, "direction": p.direction,
+                            "qty": p.qty, "entry": p.entry, "stop": p.stop,
+                            "reason": p.reason, "partial_done": p.partial_done,
                             "realized_pnl": p.realized_pnl,
                         }
                         for p in self.broker.positions.values()
@@ -96,111 +101,137 @@ class LiveTrader:
         )
 
     # ------------------------------------------------------------------ data
-    def _fetch(self) -> pd.DataFrame:
+    def _fetch(self, symbol: str) -> pd.DataFrame:
         ex = self.cfg.exchange
         need = self.cfg.strategy.structure_lookback + self.cfg.strategy.ema_slow + 50
         return fetch_ohlcv(
-            ex.exchange_id, ex.symbol, ex.timeframe, limit=need, testnet=ex.testnet
+            ex.exchange_id, symbol, ex.timeframe, limit=need, testnet=ex.testnet
         )
+
+    def _positions_for(self, symbol: str):
+        return [p for p in self.broker.positions.values() if p.symbol == symbol]
 
     # ------------------------------------------------------------------ tick
     def on_candle_close(self) -> None:
-        """Run one decision cycle on the latest CLOSED candle."""
-        raw = self._fetch()
-        if len(raw) < self.cfg.strategy.ema_slow + 10:
-            log.warning("Not enough candles yet (%d)", len(raw))
-            return
-        # Drop the still-forming candle: we only trade closed bars.
-        raw = raw.iloc[:-1]
-        data = add_indicators(raw, self.cfg.strategy)
-        i = len(data) - 1
-        price = float(data["close"].iat[i])
-        a = float(data["atr"].iat[i])
-
+        """Run one decision cycle over every symbol's latest CLOSED candle."""
+        scfg = self.cfg.strategy
         if self.mode == "demo":
-            self.broker.refresh(self.cfg.exchange.symbol)
+            self.broker.refresh(self.symbols[0])
+
+        enriched: dict[str, pd.DataFrame] = {}
+        for symbol in self.symbols:
+            try:
+                raw = self._fetch(symbol)
+            except Exception:
+                log.exception("Fetch failed for %s; skipping this cycle", symbol)
+                continue
+            if len(raw) < scfg.ema_slow + 10:
+                log.warning("Not enough candles yet for %s (%d)", symbol, len(raw))
+                continue
+            data = add_indicators(raw.iloc[:-1], scfg)  # closed bars only
+            enriched[symbol] = data
+            self.last_marks[symbol] = float(data["close"].iat[-1])
 
         # 1) manage open positions: stop, scale-out, runner target, trailing
-        scfg = self.cfg.strategy
-        bar_high = float(data["high"].iat[i])
-        bar_low = float(data["low"].iat[i])
-        for pos in list(self.broker.positions.values()):
-            hit = (pos.direction > 0 and bar_low <= pos.stop) or (
-                pos.direction < 0 and bar_high >= pos.stop
-            )
-            if hit:
-                self.broker.close_position(pos.id, price)
-                self.risk.release_position(pos.id)
-                log.info("Stop hit -> closed %s", pos.id)
-                continue
+        for symbol, data in enriched.items():
+            i = len(data) - 1
+            price = float(data["close"].iat[i])
+            a = float(data["atr"].iat[i])
+            bar_high = float(data["high"].iat[i])
+            bar_low = float(data["low"].iat[i])
 
-            r_dist = abs(pos.entry - pos.initial_stop)
-            favourable = bar_high if pos.direction > 0 else bar_low
-
-            if scfg.partial_take_r and not pos.partial_done:
-                level = pos.entry + pos.direction * scfg.partial_take_r * r_dist
-                reached = favourable >= level if pos.direction > 0 else favourable <= level
-                if reached:
-                    self.broker.close_partial(pos.id, pos.qty * scfg.partial_take_fraction, price)
-                    pos.partial_done = True
-                    pos.stop = max(pos.stop, pos.entry) if pos.direction > 0 else min(pos.stop, pos.entry)
-                    self.risk.update_position_risk(pos.id, pos.entry, pos.stop, pos.qty, pos.direction)
-                    log.info("Banked %.0f%% of %s at +%.1fR; stop -> breakeven",
-                             scfg.partial_take_fraction * 100, pos.id, scfg.partial_take_r)
-
-            if scfg.target_r:
-                target = pos.entry + pos.direction * scfg.target_r * r_dist
-                reached = favourable >= target if pos.direction > 0 else favourable <= target
-                if reached:
+            for pos in self._positions_for(symbol):
+                hit = (pos.direction > 0 and bar_low <= pos.stop) or (
+                    pos.direction < 0 and bar_high >= pos.stop
+                )
+                if hit:
                     self.broker.close_position(pos.id, price)
                     self.risk.release_position(pos.id)
-                    log.info("Runner target +%.1fR hit -> closed %s", scfg.target_r, pos.id)
+                    log.info("Stop hit -> closed %s %s", symbol, pos.id)
                     continue
 
-            pos.best_price = (
-                max(pos.best_price, price) if pos.direction > 0 else min(pos.best_price, price)
-            )
-            new_stop = self.strategy.manage_stop(
-                pos.direction, pos.entry, pos.initial_stop, pos.stop, pos.best_price, a
-            )
-            if new_stop != pos.stop:
-                log.info("Trail %s stop %.2f -> %.2f", pos.id, pos.stop, new_stop)
-                pos.stop = new_stop
-                self.risk.update_position_risk(pos.id, pos.entry, pos.stop, pos.qty, pos.direction)
+                r_dist = abs(pos.entry - pos.initial_stop)
+                favourable = bar_high if pos.direction > 0 else bar_low
 
-        # 2) equity + kill switch
-        equity = self.broker.equity(price)
-        if self.risk.check_kill_switch(equity):
+                if scfg.partial_take_r and not pos.partial_done:
+                    level = pos.entry + pos.direction * scfg.partial_take_r * r_dist
+                    reached = favourable >= level if pos.direction > 0 else favourable <= level
+                    if reached:
+                        self.broker.close_partial(pos.id, pos.qty * scfg.partial_take_fraction, price)
+                        pos.partial_done = True
+                        pos.stop = max(pos.stop, pos.entry) if pos.direction > 0 else min(pos.stop, pos.entry)
+                        self.risk.update_position_risk(pos.id, pos.entry, pos.stop, pos.qty, pos.direction)
+                        log.info("Banked %.0f%% of %s at +%.1fR; stop -> breakeven",
+                                 scfg.partial_take_fraction * 100, pos.id, scfg.partial_take_r)
+
+                if scfg.target_r:
+                    target = pos.entry + pos.direction * scfg.target_r * r_dist
+                    reached = favourable >= target if pos.direction > 0 else favourable <= target
+                    if reached:
+                        self.broker.close_position(pos.id, price)
+                        self.risk.release_position(pos.id)
+                        log.info("Runner target +%.1fR hit -> closed %s %s", scfg.target_r, symbol, pos.id)
+                        continue
+
+                pos.best_price = (
+                    max(pos.best_price, price) if pos.direction > 0 else min(pos.best_price, price)
+                )
+                new_stop = self.strategy.manage_stop(
+                    pos.direction, pos.entry, pos.initial_stop, pos.stop, pos.best_price, a
+                )
+                if new_stop != pos.stop:
+                    log.info("Trail %s %s stop %.2f -> %.2f", symbol, pos.id, pos.stop, new_stop)
+                    pos.stop = new_stop
+                    self.risk.update_position_risk(pos.id, pos.entry, pos.stop, pos.qty, pos.direction)
+
+        # 2) portfolio equity, kill switch, daily pause
+        equity = self.broker.equity(self.last_marks)
+        killed = self.risk.check_kill_switch(equity)
+        self.risk.observe(equity, datetime.now(timezone.utc).date())
+        if killed:
             log.error(self.risk.halt_reason)
             self._save_state(equity)
             return
+        if self.risk.paused_today:
+            log.warning("Daily loss pause active — no new trades until tomorrow (UTC).")
 
-        # 3) new setups (one position at a time keeps demo results readable)
-        if not self.broker.positions:
-            sig = self.strategy.evaluate(data, i)
-            if sig is not None:
+        # 3) new setups, one position per symbol
+        if self.risk.can_open:
+            for symbol, data in enriched.items():
+                if self._positions_for(symbol):
+                    continue
+                i = len(data) - 1
+                sig = self.strategy.evaluate(data, i)
+                if sig is None:
+                    continue
+                price = float(data["close"].iat[i])
+                a = float(data["atr"].iat[i])
                 cash = (
                     self.broker.cash
                     if self.mode == "paper"
-                    else self.broker.fetch_quote_balance(self.cfg.exchange.symbol)
+                    else self.broker.fetch_quote_balance(symbol)
                 )
-                qty, risk_amt = self.risk.position_size("new", price, sig.stop, equity, cash)
+                vs = self.risk.vol_scalar(a, price)
+                qty, risk_amt = self.risk.position_size(
+                    "new", price, sig.stop, equity, cash, vol_scalar=vs
+                )
                 if qty > 0:
                     pos = self.broker.open_position(
-                        symbol=self.cfg.exchange.symbol, direction=sig.direction,
+                        symbol=symbol, direction=sig.direction,
                         qty=qty, price=price, stop=sig.stop, risk_amount=risk_amt,
                         opened_at=datetime.now(timezone.utc).isoformat(), reason=sig.reason,
                     )
                     if pos is not None:
                         self.risk.register_position(pos.id, risk_amt)
-                        log.info("ENTRY %s: %s", pos.id, sig.reason)
+                        log.info("ENTRY %s %s: %s (vol scalar %.2f)", symbol, pos.id, sig.reason, vs)
                 else:
-                    log.info("Signal found but risk manager sized it to zero: %s", sig.reason)
+                    log.info("%s signal sized to zero by risk manager: %s", symbol, sig.reason)
 
         self._save_state(equity)
         log.info(
-            "equity=%.2f cash-mode=%s open=%d halted=%s",
+            "equity=%.2f mode=%s open=%d halted=%s paused=%s",
             equity, self.mode, len(self.broker.positions), self.risk.halted,
+            self.risk.paused_today,
         )
 
     # ------------------------------------------------------------------ loop
@@ -208,11 +239,13 @@ class LiveTrader:
         tf_s = TIMEFRAME_SECONDS[self.cfg.exchange.timeframe]
         log.info(
             "Starting %s trading: %s %s on %s (testnet=%s). Budget=%.2f, "
-            "risk/trade=%.2f%%, total-risk cap=%.1f%%, kill switch at -%.1f%%.",
-            self.mode, self.cfg.exchange.symbol, self.cfg.exchange.timeframe,
+            "risk/trade=%.2f%%, total-risk cap=%.1f%%, kill switch at -%.1f%%, "
+            "daily pause at -%s%%.",
+            self.mode, ", ".join(self.symbols), self.cfg.exchange.timeframe,
             self.cfg.exchange.exchange_id, self.cfg.exchange.testnet,
             self.cfg.risk.allocated_budget, self.cfg.risk.risk_per_trade_pct,
             self.cfg.risk.max_total_risk_pct, self.cfg.risk.max_drawdown_pct,
+            self.cfg.risk.daily_loss_pause_pct,
         )
         while True:
             try:

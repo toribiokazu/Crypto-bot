@@ -1,0 +1,44 @@
+# ============================================================
+# Trading bot configuration
+# Risk ceilings (10% total open risk, 10% drawdown kill switch)
+# are HARD-CODED maximums — values above them are rejected.
+# ============================================================
+
+exchange:
+  exchange_id: binance      # any ccxt exchange id (binance, bybit, kraken...)
+  testnet: true             # keep true until the demo period is over
+  symbol: BTC/USDT
+  timeframe: 4h             # 1h/4h recommended; price action is noisy below
+
+risk:
+  allocated_budget: 1000    # money the bot manages (demo funds while testing)
+  risk_per_trade_pct: 1.5   # each trade risks 1.5% of budget => ~7 losing
+                            # trades in a row before the kill switch triggers
+  max_total_risk_pct: 10    # hard cap on combined open risk (max 10)
+  max_drawdown_pct: 10      # kill switch: stop trading at -10% (max 10)
+  max_open_positions: 3
+  fee_pct: 0.10             # taker fee per side
+  slippage_pct: 0.05
+
+strategy:
+  ema_fast: 21
+  ema_slow: 55
+  atr_period: 14
+  rsi_period: 14
+  swing_left: 3
+  swing_right: 3
+  structure_lookback: 120
+  zone_cluster_atr_mult: 0.5
+  zone_touch_atr_mult: 0.25
+  min_pattern_score: 0.45
+  rsi_long_max: 70
+  rsi_short_min: 30
+  stop_atr_buffer: 0.5
+  max_stop_atr_mult: 3.0
+  breakeven_at_r: 1.5       # stop -> entry once the trade is +1.5R
+  trail_atr_mult: 4.5       # then trail 4.5*ATR behind the best close
+                            # (wide on purpose: winners must run to pay
+                            # for the many small losses)
+  target_r: null            # null = no hard target, let winners run
+  allow_shorts: false       # spot demo accounts are long-only
+  cooldown_bars: 3

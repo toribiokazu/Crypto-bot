@@ -148,13 +148,24 @@ class PriceActionStrategy:
         r = abs(entry - initial_stop)
         if r <= 0:
             return current_stop
+        # two-stage trail: loose while the trend develops, tight once the
+        # runner is deep in profit so reversals give back less
+        mult = cfg.trail_atr_mult
+        if cfg.trail_tighten_after_r is not None:
+            deep = (
+                best_price >= entry + cfg.trail_tighten_after_r * r
+                if direction > 0
+                else best_price <= entry - cfg.trail_tighten_after_r * r
+            )
+            if deep:
+                mult = cfg.trail_atr_mult_tight
         new_stop = current_stop
         if direction > 0:
             if best_price >= entry + cfg.breakeven_at_r * r:
                 new_stop = max(new_stop, entry)  # breakeven
-                new_stop = max(new_stop, best_price - cfg.trail_atr_mult * a)
+                new_stop = max(new_stop, best_price - mult * a)
         else:
             if best_price <= entry - cfg.breakeven_at_r * r:
                 new_stop = min(new_stop, entry)
-                new_stop = min(new_stop, best_price + cfg.trail_atr_mult * a)
+                new_stop = min(new_stop, best_price + mult * a)
         return new_stop

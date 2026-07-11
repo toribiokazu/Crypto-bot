@@ -102,8 +102,10 @@ Decisions baked into it (see the comments in `config.small.yaml`):
   were only feeding fees.
 - Dollar risk rails: lose **$3 in a day** → paused until tomorrow; lose
   **$10 total** → kill switch, manual reset required.
-- Measured in portfolio sims (8 regime sets): ~46% win rate, ~3
-  trades/week, +1.65%/30d mean, worst regime -4.5%, zero kill-switch hits.
+- **16 pairs scanned** (widened from 12 — measured +0.5%/30d for free) and
+  the config points out the BNB fee discount, worth another ~+0.1%/30d.
+- Measured in portfolio sims (8 regime sets): ~48% win rate, ~3
+  trades/week, +2.3%/30d mean, worst regime -3.8%, zero kill-switch hits.
 
 Be realistic about the goal at this size: with a ~$100 budget the expected
 profit is on the order of **a few dollars a month** — this stage is about

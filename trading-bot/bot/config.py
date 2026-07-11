@@ -33,6 +33,12 @@ class StrategyConfig:
     partial_take_fraction: float = 0.3  # fraction of the position banked there
     breakeven_at_r: float = 1.0  # move stop to entry at this R
     trail_atr_mult: float = 3.5  # chandelier trail (used when target_r is None)
+    # two-stage trail: once the runner is deep in profit, tighten the trail
+    # so less of the open gain is handed back on the reversal
+    # Off by default: measured across 8 regime sets it CUT returns (-0.3%/30d)
+    # by amputating exactly the big winners that pay for the losses.
+    trail_tighten_after_r: float | None = None  # tighten beyond this R (None = off)
+    trail_atr_mult_tight: float = 2.0  # the tighter multiple used after that
     target_r: float | None = None  # optional runner take-profit in R
     allow_shorts: bool = False  # spot demo accounts are long-only
     cooldown_bars: int = 3  # bars to wait after closing a trade

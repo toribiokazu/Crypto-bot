@@ -1,0 +1,72 @@
+# ============================================================
+# MEXC PAPER-TRADING PROFILE — real MEXC prices, simulated fills,
+# NO API keys needed. Run on your machine with:
+#
+#   python run_live.py --mode paper --config config.mexc-paper.yaml --state state_mexc.json
+#
+# Identical strategy/risk to config.small.yaml; only the venue and
+# its fee model differ (MEXC advertises 0.05% spot taker — verify on
+# their fee page, promos change). Trades journal to trades_paper.csv.
+# NOTE: MEXC has no testnet, so --mode demo will refuse to start on
+# this profile by design. Paper only.
+# ============================================================
+
+exchange:
+  exchange_id: mexc
+  testnet: true             # ignored for market data in paper mode; keeps
+                            # the demo-mode guard armed if anyone flips modes
+  symbols:
+    - BTC/USDT
+    - ETH/USDT
+    - SOL/USDT
+    - BNB/USDT
+    - XRP/USDT
+    - ADA/USDT
+    - DOGE/USDT
+    - AVAX/USDT
+    - LINK/USDT
+    - DOT/USDT
+    - LTC/USDT
+    - NEAR/USDT
+    - UNI/USDT
+    - ATOM/USDT
+    - FIL/USDT
+    - TRX/USDT
+  timeframe: 4h
+
+risk:
+  allocated_budget: 100
+  risk_per_trade_pct: 1.0
+  max_total_risk_pct: 10
+  max_drawdown_pct: 10
+  daily_loss_pause_pct: 3
+  vol_target_atr_pct: 0.6
+  min_stop_cost_mult: 5
+  min_order_notional: 6
+  max_open_positions: 2
+  fee_pct: 0.05             # MEXC advertised spot taker
+  slippage_pct: 0.05
+
+strategy:
+  ema_fast: 21
+  ema_slow: 55
+  atr_period: 14
+  rsi_period: 14
+  swing_left: 3
+  swing_right: 3
+  structure_lookback: 120
+  zone_cluster_atr_mult: 0.5
+  zone_touch_atr_mult: 0.25
+  min_pattern_score: 0.60
+  rsi_long_max: 70
+  rsi_short_min: 30
+  stop_atr_buffer: 0.5
+  max_stop_atr_mult: 3.0
+  partial_take_r: 1.0
+  partial_take_fraction: 0.3
+  breakeven_at_r: 1.0
+  trail_atr_mult: 3.5
+  trail_tighten_after_r: null
+  target_r: null
+  allow_shorts: false
+  cooldown_bars: 3

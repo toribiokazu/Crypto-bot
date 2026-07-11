@@ -133,8 +133,12 @@ class LiveTrader:
     def _fetch(self, symbol: str) -> pd.DataFrame:
         ex = self.cfg.exchange
         need = self.cfg.strategy.structure_lookback + self.cfg.strategy.ema_slow + 50
+        # Paper mode always reads REAL market data — that's the point of
+        # paper trading — and it keeps working on exchanges with no testnet
+        # (e.g. MEXC). Only demo order flow goes to the sandbox.
+        use_testnet = ex.testnet and self.mode == "demo"
         return fetch_ohlcv(
-            ex.exchange_id, symbol, ex.timeframe, limit=need, testnet=ex.testnet
+            ex.exchange_id, symbol, ex.timeframe, limit=need, testnet=use_testnet
         )
 
     def _positions_for(self, symbol: str):

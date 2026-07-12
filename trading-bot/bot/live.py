@@ -22,7 +22,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from .broker import CcxtBroker, PaperBroker
+from .broker import CcxtBroker, PaperBroker, Position
 from .config import BotConfig, load_api_keys
 from .data import fetch_ohlcv
 from .indicators import add_indicators
@@ -71,12 +71,39 @@ class LiveTrader:
 
     # ----------------------------------------------------------------- state
     def _load_state(self) -> None:
-        if self.state_path.exists():
-            st = json.loads(self.state_path.read_text())
-            self.risk.halted = st.get("halted", False)
-            self.risk.halt_reason = st.get("halt_reason", "")
-            if self.risk.halted:
-                log.warning("Loaded HALTED state: %s", self.risk.halt_reason)
+        if not self.state_path.exists():
+            return
+        st = json.loads(self.state_path.read_text())
+        self.risk.halted = st.get("halted", False)
+        self.risk.halt_reason = st.get("halt_reason", "")
+        if self.risk.halted:
+            log.warning("Loaded HALTED state: %s", self.risk.halt_reason)
+        # Paper runs must survive restarts (reboots, ephemeral containers):
+        # restore cash and open positions, and re-register their risk, so a
+        # resumed run continues the same experiment instead of resetting it.
+        if self.mode != "paper" or st.get("mode") != "paper":
+            return
+        if "cash" in st:
+            self.broker.cash = float(st["cash"])
+        for d in st.get("open_positions", []):
+            if not {"initial_stop", "best_price", "risk_amount"} <= d.keys():
+                log.warning("Skipping position %s from old state format", d.get("id"))
+                continue
+            pos = Position(
+                id=d["id"], symbol=d["symbol"], direction=d["direction"],
+                qty=d["qty"], entry=d["entry"], initial_stop=d["initial_stop"],
+                stop=d["stop"], best_price=d["best_price"],
+                risk_amount=d["risk_amount"], opened_at=d.get("opened_at"),
+                reason=d.get("reason", ""), partial_done=d.get("partial_done", False),
+                realized_pnl=d.get("realized_pnl", 0.0),
+            )
+            self.broker.positions[pos.id] = pos
+            self.risk.register_position(pos.id, pos.risk_amount)
+            if pos.stop != pos.initial_stop:  # breakeven/trail already released risk
+                self.risk.update_position_risk(pos.id, pos.entry, pos.stop, pos.qty, pos.direction)
+        if self.broker.positions:
+            log.info("Resumed %d open paper position(s) from %s",
+                     len(self.broker.positions), self.state_path)
 
     def _save_state(self, equity: float) -> None:
         self.state_path.write_text(
@@ -85,13 +112,17 @@ class LiveTrader:
                     "updated": datetime.now(timezone.utc).isoformat(),
                     "mode": self.mode,
                     "equity": equity,
+                    "cash": getattr(self.broker, "cash", None),
                     "halted": self.risk.halted,
                     "halt_reason": self.risk.halt_reason,
                     "paused_today": self.risk.paused_today,
                     "open_positions": [
                         {
                             "id": p.id, "symbol": p.symbol, "direction": p.direction,
-                            "qty": p.qty, "entry": p.entry, "stop": p.stop,
+                            "qty": p.qty, "entry": p.entry,
+                            "initial_stop": p.initial_stop, "stop": p.stop,
+                            "best_price": p.best_price, "risk_amount": p.risk_amount,
+                            "opened_at": p.opened_at,
                             "reason": p.reason, "partial_done": p.partial_done,
                             "realized_pnl": p.realized_pnl,
                         }

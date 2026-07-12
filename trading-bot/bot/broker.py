@@ -133,6 +133,11 @@ class CcxtBroker:
         klass = getattr(ccxt, exchange_id)
         self.ex = klass({"apiKey": api_key, "secret": api_secret, "enableRateLimit": True})
         if testnet:
+            if not self.ex.urls.get("test"):
+                raise RuntimeError(
+                    f"{exchange_id} has no testnet/sandbox. Demo mode needs an "
+                    "exchange with one (binance, bybit); paper mode works anywhere."
+                )
             self.ex.set_sandbox_mode(True)
         self.testnet = testnet
         self.positions: dict[str, Position] = {}

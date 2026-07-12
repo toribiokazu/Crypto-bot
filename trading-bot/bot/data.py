@@ -42,6 +42,12 @@ def fetch_ohlcv(
 
     rows: list[list[float]] = []
     cursor = since_ms
+    if cursor is None and limit > 1:
+        # Without `since`, exchanges return only their most recent page (MEXC
+        # caps it at 500 rows) and the forward-moving cursor can never reach
+        # further back — so start `limit` candles in the past and walk forward.
+        tf_ms = ex.parse_timeframe(timeframe) * 1000
+        cursor = ex.milliseconds() - limit * tf_ms
     for _ in range(max_batches):
         batch = ex.fetch_ohlcv(symbol, timeframe, since=cursor, limit=min(limit - len(rows), 1000))
         if not batch:

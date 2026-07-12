@@ -1,5 +1,6 @@
 .env
-state.json
+.venv/
+state*.json
 bot.log
 __pycache__/
 *.pyc

@@ -142,6 +142,22 @@ mechanics are not modeled, and the live `CcxtBroker` is spot-only and
 refuses short orders. Let the paper journal earn trust before any real
 futures order flow is even discussed.
 
+### Analysis tooling behind those numbers
+
+The study that produced the futures profile is reproducible from the repo
+(run from `trading-bot/`):
+
+- `fetch_cache.py` — snapshot MEXC spot candles into `data_cache/` and
+  USDT perpetuals into `data_cache_swap/` (both directories ship
+  pre-populated with the Nov 2025–Jul 2026 window the study used)
+- `analyze.py` — baseline diagnosis: PnL by pair / pattern / month /
+  exit reason, R distribution, market-regime context
+- `sweep.py` — entry/exit parameter sweeps (pattern score, RSI cap,
+  trails, targets, partial banking)
+- `sweep2.py` — structural tests on spot: BTC regime filter, per-pattern
+  entry subsets
+- `sweep3.py` — the futures study: long+short/short-only on perp data
+
 ## Weekly review workflow
 
 The live loop journals every completed trade to `trades_demo.csv` /
